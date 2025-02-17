@@ -1,0 +1,115 @@
+body {
+    font-family: "Kufam", sans-serif;
+}
+ul li p {
+    font-size: 20px;
+    margin-bottom: 0px;
+    color: #708090;
+}
+
+.container {
+    max-width: 100%;
+    width: 1500px !important;
+}
+
+.btn {
+    padding: 0px;
+    width: 200px !important;
+    margin-left: 10px;
+}
+ul.no-marker {
+    list-style-type: none;
+    /* Loại bỏ dấu chấm đầu dòng */
+    padding: 0;
+    /* Xóa khoảng cách padding mặc định */
+    margin: 0;
+    /* Xóa khoảng cách margin mặc định */
+}
+
+.active {
+    color: #dc3545 !important;
+}
+
+.vocabulary-vn {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.btn-add {
+    color: #ee0033 !important;
+    background-color: #fff;
+    border-color: #ee0033;
+    white-space: pre;
+}
+
+.btn-add:hover {
+    background-color: rgba(181, 180, 180, 0.5) !important;
+}
+.content.loading {
+    position: relative;
+}
+
+.content.loading::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    background: rgb(228 226 226 / 70%) !important;
+}
+
+.content.loading::after {
+    content: "";
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    transform: translate(-50%, -50%);
+    border: 5px solid #ccc;
+    border-top-color: #000;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    z-index: 1001;
+}
+.btn-delete-vocabulary {
+    border: none;
+    margin-left: 5px;
+}
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+.list-unstyled {
+    display: flex;
+    justify-content: space-between;
+}
+@media only screen and (max-width: 767px) {
+    ul li p {
+        font-size: 12px !important;
+    }
+    .list_action img {
+        width: 10px;
+    }
+
+    .vocabulary-item li {
+        justify-content: space-between;
+    }
+    .vocabulary-vn {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: pre-line;
+    }
+}
