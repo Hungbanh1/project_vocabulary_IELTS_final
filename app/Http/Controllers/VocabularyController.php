@@ -34,12 +34,12 @@ class VocabularyController extends Controller
         $validator = Validator::make($request->all(), [
             'english' => 'required|unique:vocabularies',
             'vietnam' => 'required',
-            'type' => 'required',
+            'type_vocabulary' => 'required', // Đúng với AJAX gửi lên
         ], [
+            'type_vocabulary.required' => 'Vui lòng chọn loại từ.',
             'english.required' => 'Từ vựng là trường bắt buộc',
             'english.unique' => 'Từ vựng này đã tồn tại',
             'vietnam.required' => 'Từ vựng là trường bắt buộc.',
-            'type.required' => 'Vui lòng chọn loại từ.',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
@@ -47,7 +47,7 @@ class VocabularyController extends Controller
         $data = [
             'english' => $request->input('english'),
             'vietnam' => $request->input('vietnam'),
-            'type_id' => $request->input('type'),
+            'type_id' => $request->input('type_vocabulary'),
         ];
         // $vocabulary = new Vocabulary();
         // $vocabulary->english = $request->input('english');
@@ -154,4 +154,12 @@ class VocabularyController extends Controller
     {
         return $this->filterByType(5);
     }
-}
+    public function Parapharse(){
+        $vocabulary = "";
+        return view('parapharse.index' ,compact('vocabulary'));
+    }
+    // public function Parapharse()
+    // {
+    //     return $this->filterByType(6);
+    // }
+} 

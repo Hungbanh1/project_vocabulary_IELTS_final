@@ -31,9 +31,17 @@ ul.no-marker {
 }
 
 .vocabulary-vn {
-    overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+.vocabulary-en {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .btn-add {
@@ -92,6 +100,9 @@ ul.no-marker {
 .list-unstyled {
     display: flex;
     justify-content: space-between;
+}
+.d-none {
+    display: none;
 }
 @media only screen and (max-width: 767px) {
     ul li p {

@@ -31,6 +31,8 @@ Route::get('/adv', "VocabularyController@adv")->name('adv');
 Route::get('/adj', "VocabularyController@adj")->name('adj');
 Route::get('/V', "VocabularyController@V")->name('V');
 Route::get('/N', "VocabularyController@N")->name('N');
+Route::get('/parapharse', "VocabularyController@parapharse")->name('parapharse');
 Route::get('/Phrase', "VocabularyController@Phrase")->name('Phrase');
 Route::get('/edit', "VocabularyController@edit")->name('edit');
 Route::post('/edit_vocabulary', "VocabularyController@edit_vocabulary")->name('edit_vocabulary');
+Route::post('/add_parapharse', "VocabularyController@add_parapharse")->name('add_parapharse');
