@@ -21,6 +21,10 @@ class VocabularyServices
     {
         return $this->VocabularyRepositories->getAllVocabularies();
     }
+    public function getAllParapharse()
+    {
+        return $this->VocabularyRepositories->getAllParapharse();
+    }
     public function searchAjax($getKeyword)
     {
         return $this->VocabularyRepositories->searchAjax($getKeyword);
@@ -45,6 +49,10 @@ class VocabularyServices
     public function createVocabulary($data)
     {
         return $this->VocabularyRepositories->createVocabulary($data);
+    }
+    public function createParapharse($data)
+    {
+        return $this->VocabularyRepositories->createParapharse($data);
     }
 
     public function updateVocabulary($id, $data)

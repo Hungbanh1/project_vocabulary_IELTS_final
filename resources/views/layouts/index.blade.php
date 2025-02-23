@@ -20,17 +20,25 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    @include('modal.modal_edit')
-    @include('modal.modal_parapharse')
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@2.8.2/dist/alpine.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Document</title>
 </head>
 
 <body>
     @php
-        $defaultUrl = url('/');
-        $type_of_voca = request()->segment(1); // adj , adv ,...
         $fullUrl = request()->fullUrl();
+        $defaultUrl = url('/');
+        $custom_url = Str::afterLast($fullUrl, '/');
+        $is_parapharse = $custom_url;
+        $type_of_voca = request()->segment(1); // adj , adv ,...
+
+        // $defaultUrl = url('/');
+        // $type_of_voca = request()->segment(1); // adj , adv ,...
+        // $fullUrl = request()->fullUrl();
+
     @endphp
+
     <div id="wp-content" class="bg-white content ">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container ">
@@ -79,8 +87,117 @@
                 </div>
             </div>
         </nav>
+        <div class="container mt-5">
+            <div class="head mb-5">
+                <div class="row justify-content-end">
+                    <div class="col-lg-3 col-12">
+                        <div class="search">
+                            <form action="{{ route('search') }}" method="GET">
+                                <div class="d-flex">
+                                    <input type="text" class="form-control keyword" name="keyword" id="keyword"
+                                        placeholder="Từ vựng">
+                                    <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
+                                </div>
 
+                            </form>
+                        </div>
+                        <div class="mt-5">
+                            @if (isset($vocabulary) && !empty($vocabulary))
+                                <p>Hiện tại có : <span class="text-danger">{{ count($vocabulary) }}</span>
+                                    từ vựng</p>
+                            @else
+                            @endif
+                        </div>
+                    </div>
+                    @if ($fullUrl === $defaultUrl || $is_parapharse == 'parapharse')
+                        @php
+                            // dd($is_parapharse);
+                        @endphp
+                        <div class="col-xl-9 col-12">
+                            <div class="search">
+                                <div class="row justify-content-center ">
+                                    <div
+                                        class="group-input  {{ $is_parapharse == 'parapharse' ? 'col-lg-4 flex-wrap-nowrap' : 'col-lg-3 mx-3 ' }} col-12">
+                                        <input type="text" name="english"
+                                            class="form-control w-100 mb-2  @error('english') is-invalid @enderror"
+                                            id="english" placeholder="Tiếng anh" value="{{ old('english') }}">
+                                        <span class="invalid-feedback" id="english-error"></span>
+                                    </div>
+                                    <div
+                                        class="group-input {{ $is_parapharse == 'parapharse' ? 'col-lg-4 flex-wrap-nowrap' : 'col-lg-3 mx-3 ' }} col-12">
+                                        <input type="text" name="vietnam"
+                                            class="form-control w-100 mb-2  @error('vietnam') is-invalid @enderror"
+                                            id="vietnam" placeholder="Tiếng việt" value="{{ old('vietnam') }}">
+
+                                        <span class="invalid-feedback" id="vietnam-error"></span>
+                                    </div>
+                                    <div
+                                        class="group-input mx-3 {{ $is_parapharse == 'parapharse' ? 'd-none' : 'col-lg-3 ' }} col-12">
+                                        @if ($fullUrl === $defaultUrl)
+                                            <select id="type_vocabulary" name="type_vocabulary"
+                                                class="form-control type_vocabulary @error('type_vocabulary') is-invalid @enderror">
+                                                <option value="">Chọn loại từ</option>
+                                                @foreach ($type as $item)
+                                                    @if ($item->name == 'N')
+                                                        <option value="{{ $item->id }}" class="mr-2"
+                                                            style="color: #28a745;">
+                                                            {{ $item->name }}
+                                                            ({{ $item->description }})
+                                                        </option>
+                                                    @elseif ($item->name == 'V')
+                                                        <option value="{{ $item->id }}" class="mr-2"
+                                                            style="color: #007bff;">
+                                                            {{ $item->name }}
+                                                            ({{ $item->description }})
+                                                        </option>
+                                                    @elseif ($item->name == 'Adj')
+                                                        <option value="{{ $item->id }}" class="mr-2"
+                                                            style="color: #dc3545;">
+                                                            {{ $item->name }}
+                                                            ({{ $item->description }})
+                                                        </option>
+                                                    @elseif ($item->name == 'Adv')
+                                                        <option value="{{ $item->id }}" class="mr-2"
+                                                            style="color: #fd7e14;">
+                                                            {{ $item->name }}
+                                                            ({{ $item->description }})
+                                                        </option>
+                                                    @else
+                                                        <option value="{{ $item->id }}" class="mr-2"
+                                                            style="">
+                                                            {{ $item->name }}
+                                                            ({{ $item->description }})
+                                                        </option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                            @error('type')
+                                                <span class="invalid-feedback" role="alert">
+                                                    {{ $message }}
+                                                </span>
+                                            @enderror
+                                            <span class="invalid-feedback" id="type_vocabulary-error"></span>
+                                        @else
+                                        @endif
+                                    </div>
+                                    <button type="submit"
+                                        class="btn btn-primary {{ $is_parapharse == 'parapharse' ? 'btn-add-parapharse' : 'btn-add-vocabulary mt-3' }} col-lg-3 col-11 w-100"
+                                        style="margin-left:0px!important;padding:5px!important;margin-bottom: 8px;">Thêm
+                                        từ
+                                        vựng</button>
+                                </div>
+                                {{-- </form> --}}
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
         @yield('content')
+        <div id="config" class="d-none" data-default-url="{{ $defaultUrl }}"
+            data-route-add="{{ route('add') }}" data-route-add-parapharse="{{ route('add_parapharse') }}"
+            data-is-parapharse={{ $is_parapharse }}>
+        </div>
     </div>
 </body>
 

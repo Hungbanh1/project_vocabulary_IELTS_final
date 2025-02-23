@@ -84,7 +84,8 @@ ul.no-marker {
     animation: spin 1s linear infinite;
     z-index: 1001;
 }
-.btn-delete-vocabulary {
+.btn-delete-vocabulary,
+.btn-delete-parapharse {
     border: none;
     margin-left: 5px;
 }
@@ -103,6 +104,9 @@ ul.no-marker {
 }
 .d-none {
     display: none;
+}
+.flex-wrap-nowrap {
+    flex-wrap: nowrap !important;
 }
 @media only screen and (max-width: 767px) {
     ul li p {

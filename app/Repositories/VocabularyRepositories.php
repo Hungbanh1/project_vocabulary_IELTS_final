@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Type;
 use App\Vocabulary;
+use App\Parapharse;
 
 class VocabularyRepositories
 {
@@ -21,6 +22,14 @@ class VocabularyRepositories
         // $vocabulary = Vocabulary::orderBy('english', 'asc')->get();
         // $type = Type::all();
         return Vocabulary::orderBy('english', 'asc')->get();
+        // return view('index', compact('vocabulary', 'type'));
+    }
+    public function getAllParapharse()
+    {
+        // return Vocabulary::all();
+        // $vocabulary = Vocabulary::orderBy('english', 'asc')->get();
+        // $type = Type::all();
+        return Parapharse::orderBy('english', 'asc')->get();
         // return view('index', compact('vocabulary', 'type'));
     }
     public function getType()
@@ -67,6 +76,11 @@ class VocabularyRepositories
     {
 
         return Vocabulary::create($data);
+    }
+    public function createParapharse($data)
+    {
+
+        return Parapharse::create($data);
     }
 
     public function updateVocabulary($id, $data)

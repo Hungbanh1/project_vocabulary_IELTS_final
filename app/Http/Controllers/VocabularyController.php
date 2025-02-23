@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\VocabularyServices;
 use App\Type;
 use App\Vocabulary;
+use App\Parapharse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
@@ -57,6 +58,29 @@ class VocabularyController extends Controller
         // $vocabulary->save();
         // return response()->json(['message' => 'Thêm từ vựng thành công!'], 200);
         return redirect('/');
+    }
+    function add_parapharse(Request $request)
+    {
+        
+        $validator = Validator::make($request->all(), [
+            'english' => 'required|unique:parapharse',
+            'vietnam' => 'required',
+        ], [
+            'english.required' => 'Từ vựng là trường bắt buộc',
+            'english.unique' => 'Từ vựng này đã tồn tại',
+            'vietnam.required' => 'Từ vựng là trường bắt buộc.',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+        $data = [
+            'english' => $request->input('english'),
+            'vietnam' => $request->input('vietnam'),
+        ];
+ 
+        $this->VocabularyServices->createParapharse($data);
+  
+        return redirect('/parapharse');
     }
     function search(Request $request)
     {
@@ -127,9 +151,30 @@ class VocabularyController extends Controller
             ], 404);
         }
     
-        // Xóa từ vựng
         $vocabulary->delete();
-        return redirect('/')->with('success', 'Xoá từ vựng thành công');
+        return response()->json([
+            'success' => true,
+            'message' => 'Xoá từ vựng thành công',
+            'redirect_url' => url('/') // Trả về URL redirect
+        ]);
+    }
+    public function delete_parapharse($id){
+        $vocabulary = Parapharse::find($id);
+        // dd($vocabulary);
+        if (!$vocabulary) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy từ vựng!',
+                'vocabulary' => $vocabulary,
+            ], 404);
+        }
+    
+        $vocabulary->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Xoá từ vựng thành công',
+            'redirect_url' => url('/parapharse') // Trả về URL redirect
+        ]);
     }
     public function adv()
     {
@@ -156,7 +201,12 @@ class VocabularyController extends Controller
     }
     public function Parapharse(){
         $vocabulary = "";
-        return view('parapharse.index' ,compact('vocabulary'));
+
+        $type = $this->VocabularyServices->getType();
+        $vocabulary = $this->VocabularyServices->getAllParapharse();
+        $is_parapharse = "parapharse";
+
+        return view('parapharse.index', compact('vocabulary', 'type','is_parapharse'));
     }
     // public function Parapharse()
     // {

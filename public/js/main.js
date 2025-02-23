@@ -1,11 +1,15 @@
 var config = document.getElementById("config");
 var defaultUrl = config.dataset.defaultUrl;
 var route_add = config.dataset.routeAdd;
-
+var route_add_parapharse = config.dataset.routeAddParapharse;
+var is_parapharse = config.dataset.isParapharse;
+console.log(is_parapharse);
 
 //add vocabulary
 $('.btn-add-vocabulary').click(function(e) {
     e.preventDefault(); // Ngăn form submit
+    
+    
     $('.content').addClass("loading");
     $(".form-control").removeClass("is-invalid"); // Xóa class lỗi
     $(".invalid-feedback").text(""); // Xóa thông báo lỗi cũ
@@ -38,7 +42,7 @@ $('.btn-add-vocabulary').click(function(e) {
                     icon: "success",
                     confirmButtonText: "OK"
                 });
-            }, 1500);
+            }, 500);
         },
         error: function(xhr) {
             // $(".content").removeClass("loading");
@@ -61,8 +65,69 @@ $('.btn-add-vocabulary').click(function(e) {
                 } else {
                     Swal.fire("Lỗi!", "Có lỗi xảy ra. Vui lòng thử lại!", "error");
                 }
-            }, 800);
+            }, 500);
+        },
+        complete: function() {
+        },
 
+    })
+
+})
+$('.btn-add-parapharse').click(function(e) {
+    e.preventDefault(); // Ngăn form submit
+    $('.content').addClass("loading");
+    $(".form-control").removeClass("is-invalid"); // Xóa class lỗi
+    $(".invalid-feedback").text(""); // Xóa thông báo lỗi cũ
+    // const year = $("#select_year").val();
+    const english = $("#english").val();
+    const vietnam = $("#vietnam").val();
+    console.log(route_add_parapharse);
+    
+    data = {
+        english: english,
+        vietnam: vietnam,
+    }
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        url: route_add_parapharse,
+        type: "POST",
+        data: data,
+        success: function(response) {
+            $('.content').html(response);
+            setTimeout(function() {
+                $(".content").removeClass("loading");
+                Swal.fire({
+                    title: "Thành công!",
+                    text: "Thêm từ vựng thành công!",
+                    icon: "success",
+                    confirmButtonText: "OK"
+                });
+            }, 500);
+        },
+        error: function(xhr) {
+            // $(".content").removeClass("loading");
+            setTimeout(function() {
+                $(".content").removeClass("loading");
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.errors;
+                    console.log(errors);
+                    
+                    // Duyệt qua từng lỗi và hiển thị dưới input
+                    Object.keys(errors).forEach(function(key) {
+                        console.log(key);
+                        
+                        $("#" + key).addClass(
+                            "is-invalid"); // Thêm class đỏ vào input
+                        $("#" + key + "-error").text(errors[key][
+                            0
+                        ]); // Hiển thị lỗi
+                    });
+                } else {
+                    Swal.fire("Lỗi!", "Có lỗi xảy ra. Vui lòng thử lại!", "error");
+                }
+            }, 500);
         },
         complete: function() {
         },
@@ -72,10 +137,19 @@ $('.btn-add-vocabulary').click(function(e) {
 })
 
 //delete vocabulary
-$(document).on('click', '.btn-delete-vocabulary', function() {
+$(document).on('click', '.btn-delete-vocabulary, .btn-delete-parapharse', function() {
     let vocabularyId = $(this).data('id');
-    var url = defaultUrl + "/delete/" + vocabularyId;
-    var assetUrl = defaultUrl;
+    var url_voca =  defaultUrl + "/delete/" + vocabularyId ;
+    var url_para =  defaultUrl + "/parapharse/delete/" + vocabularyId ;
+    var url  = is_parapharse == "parapharse"
+        ? url_para
+        : url_voca;
+        console.log(url_voca);
+        console.log(url_para);
+        
+    console.log(vocabularyId);
+    console.log(defaultUrl);
+    
     Swal.fire({
         title: "Xác nhận xóa?",
         text: "Bạn có chắc chắn muốn xóa từ vựng này không?",
@@ -101,16 +175,17 @@ $(document).on('click', '.btn-delete-vocabulary', function() {
                         title: "Đã xóa!",
                         text: response.message,
                         icon: "success",
-                        timer: 1000, // Hiển thị 1s trước khi reload
+                        timer: 1000, 
                         showConfirmButton: false
                     }).then(() => {
                         setTimeout(() => {
-                            window.location.href = assetUrl;
-                            // Reload sau 1 giây
+                            window.location.href = response.redirect_url;
                         }, 200);
                     });
                 },
                 error: function(xhr) {
+                    console.log(xhr);
+                    
                     Swal.fire("Lỗi!", "Không thể xóa từ vựng.", xhr.vocabulary);
                 }
             });
