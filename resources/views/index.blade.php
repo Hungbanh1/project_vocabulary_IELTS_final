@@ -2,7 +2,6 @@
 
 @section('content')
     @include('modal.modal_edit')
-    @include('modal.modal_parapharse')
     @include('modal.modal_list_parapharse')
 
     <div class="container mt-5">
@@ -39,6 +38,15 @@
                             <p class="vocabulary-en" style="color: #6c757d;">{{ $item->vietnam }}</p>
                         </li>
                         <li>
+                            @php
+                                if ($item->is_parapharse == 1) {
+                                    echo '<p class="text-primary">Đã phân tích</p>';
+                                } else {
+                                    echo '<p class="text-danger">Chưa phân tích</p>';
+                                }
+                            @endphp
+                        </li>
+                        <li>
                             <div class="d-flex list_action">
                                 <button style="border:none" data-toggle="modal" data-target="#myModalEdit"
                                     data-eng="{{ $item->english }}" data-vn="{{ $item->vietnam }}"
@@ -49,12 +57,12 @@
                                 <button class="delete-link btn-delete-vocabulary " data-id="{{ $item->id }}">
                                     <img src="{{ asset('public/img/delete.png') }}" alt="" class="action-icon">
                                 </button>
-                                <button style="border:none; margin-left:5px" data-toggle="modal"
+                                {{-- <button style="border:none; margin-left:5px" data-toggle="modal"
                                     data-target="#ModalParapharse" data-eng="{{ $item->english }}"
                                     data-vn="{{ $item->vietnam }}" data-type="{{ $item->type->id }}"
                                     data-id="{{ $item->id }}">
                                     <i class="fa-solid fa-plus" style="color:#44ca44"></i>
-                                </button>
+                                </button> --}}
                                 <button style="border:none; margin-left:5px" data-toggle="modal"
                                     data-target="#ModalListParapharse" data-eng="{{ $item->english }}"
                                     data-vn="{{ $item->vietnam }}" data-type="{{ $item->type->id }}"

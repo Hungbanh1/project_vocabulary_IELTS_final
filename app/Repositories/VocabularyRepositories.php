@@ -26,11 +26,9 @@ class VocabularyRepositories
     }
     public function getAllParapharse()
     {
-        // return Vocabulary::all();
-        // $vocabulary = Vocabulary::orderBy('english', 'asc')->get();
-        // $type = Type::all();
-        return Parapharse::orderBy('english', 'asc')->get();
-        // return view('index', compact('vocabulary', 'type'));
+      
+        return Vocabulary::where('is_parapharse', '!=', 0)
+                        ->orderBy('english', 'asc')->get();
     }
     public function getType()
     {

@@ -32,11 +32,9 @@
         $custom_url = Str::afterLast($fullUrl, '/');
         $is_parapharse = $custom_url;
         $type_of_voca = request()->segment(1); // adj , adv ,...
-
         // $defaultUrl = url('/');
         // $type_of_voca = request()->segment(1); // adj , adv ,...
         // $fullUrl = request()->fullUrl();
-
     @endphp
 
     <div id="wp-content" class="bg-white content ">
@@ -131,57 +129,61 @@
 
                                         <span class="invalid-feedback" id="vietnam-error"></span>
                                     </div>
-                                    <div
-                                        class="group-input mx-3 {{ $is_parapharse == 'parapharse' ? 'd-none' : 'col-lg-3 ' }} col-12">
-                                        @if ($fullUrl === $defaultUrl)
-                                            <select id="type_vocabulary" name="type_vocabulary"
-                                                class="form-control type_vocabulary @error('type_vocabulary') is-invalid @enderror">
-                                                <option value="">Chọn loại từ</option>
-                                                @foreach ($type as $item)
-                                                    @if ($item->name == 'N')
-                                                        <option value="{{ $item->id }}" class="mr-2"
-                                                            style="color: #28a745;">
-                                                            {{ $item->name }}
-                                                            ({{ $item->description }})
-                                                        </option>
-                                                    @elseif ($item->name == 'V')
-                                                        <option value="{{ $item->id }}" class="mr-2"
-                                                            style="color: #007bff;">
-                                                            {{ $item->name }}
-                                                            ({{ $item->description }})
-                                                        </option>
-                                                    @elseif ($item->name == 'Adj')
-                                                        <option value="{{ $item->id }}" class="mr-2"
-                                                            style="color: #dc3545;">
-                                                            {{ $item->name }}
-                                                            ({{ $item->description }})
-                                                        </option>
-                                                    @elseif ($item->name == 'Adv')
-                                                        <option value="{{ $item->id }}" class="mr-2"
-                                                            style="color: #fd7e14;">
-                                                            {{ $item->name }}
-                                                            ({{ $item->description }})
-                                                        </option>
-                                                    @else
-                                                        <option value="{{ $item->id }}" class="mr-2"
-                                                            style="">
-                                                            {{ $item->name }}
-                                                            ({{ $item->description }})
-                                                        </option>
-                                                    @endif
-                                                @endforeach
-                                            </select>
-                                            @error('type')
-                                                <span class="invalid-feedback" role="alert">
-                                                    {{ $message }}
-                                                </span>
-                                            @enderror
-                                            <span class="invalid-feedback" id="type_vocabulary-error"></span>
-                                        @else
-                                        @endif
+                                    {{-- <div
+                                        class="group-input mx-3 {{ $is_parapharse == 'parapharse' ? 'd-none' : 'col-lg-3 ' }} col-12"> --}}
+                                    <div class="group-input mx-3 col-lg-3 col-12">
+                                        {{-- @if ($fullUrl === $defaultUrl) --}}
+                                        <select id="type_vocabulary" name="type_vocabulary"
+                                            class="form-control type_vocabulary @error('type_vocabulary') is-invalid @enderror">
+                                            <option value="">Chọn loại từ</option>
+                                            @foreach ($type as $item)
+                                                @if ($item->name == 'N')
+                                                    <option value="{{ $item->id }}" class="mr-2"
+                                                        style="color: #28a745;">
+                                                        {{ $item->name }}
+                                                        ({{ $item->description }})
+                                                    </option>
+                                                @elseif ($item->name == 'V')
+                                                    <option value="{{ $item->id }}" class="mr-2"
+                                                        style="color: #007bff;">
+                                                        {{ $item->name }}
+                                                        ({{ $item->description }})
+                                                    </option>
+                                                @elseif ($item->name == 'Adj')
+                                                    <option value="{{ $item->id }}" class="mr-2"
+                                                        style="color: #dc3545;">
+                                                        {{ $item->name }}
+                                                        ({{ $item->description }})
+                                                    </option>
+                                                @elseif ($item->name == 'Adv')
+                                                    <option value="{{ $item->id }}" class="mr-2"
+                                                        style="color: #fd7e14;">
+                                                        {{ $item->name }}
+                                                        ({{ $item->description }})
+                                                    </option>
+                                                @else
+                                                    <option value="{{ $item->id }}" class="mr-2"
+                                                        style="">
+                                                        {{ $item->name }}
+                                                        ({{ $item->description }})
+                                                    </option>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                        @error('type')
+                                            <span class="invalid-feedback" role="alert">
+                                                {{ $message }}
+                                            </span>
+                                        @enderror
+                                        <span class="invalid-feedback" id="type_vocabulary-error"></span>
                                     </div>
-                                    <button type="submit"
+                                    {{-- <button type="submit"
                                         class="btn btn-primary {{ $is_parapharse == 'parapharse' ? 'btn-add-parapharse' : 'btn-add-vocabulary mt-3' }} col-lg-3 col-11 w-100"
+                                        style="margin-left:0px!important;padding:5px!important;margin-bottom: 8px;">Thêm
+                                        từ
+                                        vựng</button> --}}
+                                    <button type="submit"
+                                        class="btn btn-primary btn-add-vocabulary mt-3 col-lg-3 col-11 w-100"
                                         style="margin-left:0px!important;padding:5px!important;margin-bottom: 8px;">Thêm
                                         từ
                                         vựng</button>

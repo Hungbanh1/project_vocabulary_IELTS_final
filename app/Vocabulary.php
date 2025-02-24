@@ -13,7 +13,8 @@ class Vocabulary extends Model
         'id',
         'english',
         'vietnam',
-        'type_id'
+        'type_id',
+        'is_parapharse'
     ];
     // public function type()
     // {

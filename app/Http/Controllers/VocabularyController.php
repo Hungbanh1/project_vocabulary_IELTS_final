@@ -45,18 +45,23 @@ class VocabularyController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
+       
         $data = [
             'english' => $request->input('english'),
             'vietnam' => $request->input('vietnam'),
             'type_id' => $request->input('type_vocabulary'),
+            'is_parapharse' => (int) $request->input('is_parapharse'), // Ép kiểu thành số nguyên
         ];
-        // $vocabulary = new Vocabulary();
-        // $vocabulary->english = $request->input('english');
-        // $vocabulary->vietnam = $request->input('vietnam');
-        // $vocabulary->type_id = $request->input('type');
         $this->VocabularyServices->createVocabulary($data);
+        // return response()->json([
+        //     'redirect_url' => url('/') // Trả về URL redirect
+        // ]);
         // $vocabulary->save();
         // return response()->json(['message' => 'Thêm từ vựng thành công!'], 200);
+        if($request->input('is_parapharse') == 1){
+            
+            return redirect('/parapharse');
+        }
         return redirect('/');
     }
     function add_parapharse(Request $request)
@@ -200,13 +205,11 @@ class VocabularyController extends Controller
         return $this->filterByType(5);
     }
     public function Parapharse(){
-        $vocabulary = "";
 
         $type = $this->VocabularyServices->getType();
         $vocabulary = $this->VocabularyServices->getAllParapharse();
-        $is_parapharse = "parapharse";
 
-        return view('parapharse.index', compact('vocabulary', 'type','is_parapharse'));
+        return view('parapharse.index', compact('vocabulary', 'type'));
     }
     // public function Parapharse()
     // {

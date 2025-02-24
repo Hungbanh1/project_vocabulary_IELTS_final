@@ -3,13 +3,10 @@ var defaultUrl = config.dataset.defaultUrl;
 var route_add = config.dataset.routeAdd;
 var route_add_parapharse = config.dataset.routeAddParapharse;
 var is_parapharse = config.dataset.isParapharse;
-console.log(is_parapharse);
 
 //add vocabulary
 $('.btn-add-vocabulary').click(function(e) {
     e.preventDefault(); // Ngăn form submit
-    
-    
     $('.content').addClass("loading");
     $(".form-control").removeClass("is-invalid"); // Xóa class lỗi
     $(".invalid-feedback").text(""); // Xóa thông báo lỗi cũ
@@ -17,12 +14,19 @@ $('.btn-add-vocabulary').click(function(e) {
     const english = $("#english").val();
     const vietnam = $("#vietnam").val();
     const type_vocabulary  = $("#type_vocabulary").val();
+    console.log(defaultUrl);
+    if(is_parapharse == "parapharse"){
+        var new_is_parapharse = 1
+    }else{
+        var new_is_parapharse = 0
+    }
 
     
     data = {
         english: english,
         vietnam: vietnam,
         type_vocabulary : type_vocabulary ,
+        is_parapharse: Number(new_is_parapharse),
     }
     console.log("Dữ liệu gửi:", data); // Kiểm tra dữ liệu trước khi gửi
     $.ajax({
