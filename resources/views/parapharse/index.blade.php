@@ -3,6 +3,23 @@
     @include('modal.modal_parapharse')
     @include('modal.modal_edit')
 
+    @if (session('message'))
+        <script>
+            Swal.fire({
+                title: "Thành công!",
+                text: "{{ session('message') }}",
+                icon: "success",
+                confirmButtonText: "OK"
+            });
+        </script>
+    @endif
+    @if ($errors->any())
+        <script>
+            $(document).ready(function() {
+                $("#myModalEdit").modal('show');
+            });
+        </script>
+    @endif
     <div class="container mt-5">
         <div class="row" id="main_content">
             @php
@@ -49,7 +66,8 @@
                                 </button> --}}
                                 <button style="border:none" data-toggle="modal" data-target="#myModalEdit"
                                     data-eng="{{ $item->english }}" data-vn="{{ $item->vietnam }}"
-                                    data-type="{{ $item->type->id }}" data-id="{{ $item->id }}">
+                                    data-type="{{ $item->type->id }}" data-id="{{ $item->id }}"
+                                    data-is-parapharse="{{ $item->is_parapharse }}">
                                     <img src="{{ asset('public/img/edit.png') }}" alt="edit vocabulary" class="action-icon">
                                 </button>
                                 <button style="border:none; margin-left:5px" data-toggle="modal"
@@ -79,8 +97,6 @@
                                     data-id="{{ $item->id }}">
                                     <i class="fa-solid fa-expand"></i>
                                 </button> --}}
-
-
                             </div>
                         </li>
                     </ul>

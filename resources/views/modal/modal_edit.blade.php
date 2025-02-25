@@ -4,14 +4,16 @@
     $(document).ready(function() {
         $('#myModalEdit').on('show.bs.modal', function(event) {
             var button = $(event.relatedTarget); // Button trigger modal
-            var eng = button.data('eng');
+            var english = button.data('eng');
             var vn = button.data('vn');
             var type = button.data('type');
             var id = button.data('id');
-            $('#eng').val(eng);
+            var is_parapharse = button.data('is-parapharse');
+            $('#englishh').val(english);
             $('#vn').val(vn);
             $('#type').val(type);
             $('#id').val(id);
+            $('#is_parapharse').val(is_parapharse);
         });
     });
 </script>
@@ -28,15 +30,20 @@
                 <form method="POST" action="{{ route('edit_vocabulary') }}">
                     @csrf
                     <input type="hidden" id="id" value="" name="id">
+                    <input type="text" id="englishh" value="" name="test">
+                    <input type="text" id="is_parapharse" class="form-control d-none" name="is_parapharse"
+                        value="">
                     <div class="form-group">
                         <label for="eng">Tiếng anh <strong class="text-danger">*</strong></label>
-                        <input type="text" class="form-control" name="eng" value="" id="eng"
-                            placeholder="Nhập từ tiếng anh">
+                        <input type="text" class="form-control @error('english') is-invalid @enderror" name="eng"
+                            value="" id="eng" placeholder="Nhập từ tiếng anh">
+                        <span class="invalid-feedback" id="english-error"></span>
                     </div>
                     <div class="form-group">
                         <label for="vn">Tiếng việt <strong class="text-danger">*</strong></label>
-                        <input type="text" class="form-control" name="vn" value="" id="vn"
-                            placeholder="Nhập từ tiếng việt">
+                        <input type="text" class="form-control @error('vn') is-invalid @enderror" name="vn"
+                            value="" id="vn" placeholder="Nhập từ tiếng việt">
+                        <span class="invalid-feedback" id="vn-error"></span>
                     </div>
                     <div class="form-group">
                         <label for="type">Loại từ <strong class="text-danger">*</strong></label>
@@ -79,6 +86,7 @@
                                 {{ $message }}
                             </span>
                         @enderror
+                        <span class="invalid-feedback" id="type-error"></span>
                     </div>
 
                     <div class="modal-footer">

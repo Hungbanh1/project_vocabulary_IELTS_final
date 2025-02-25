@@ -9,9 +9,11 @@ ul li p {
 
 .container {
     max-width: 100%;
-    width: 1500px !important;
+    width: 1300px !important;
 }
-
+.d-flex.list_action button {
+    cursor: pointer !important;
+}
 .btn {
     padding: 0px;
     width: 200px !important;

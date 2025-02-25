@@ -37,15 +37,7 @@
                             <p class="mx-3">:</p>
                             <p class="vocabulary-en" style="color: #6c757d;">{{ $item->vietnam }}</p>
                         </li>
-                        <li>
-                            @php
-                                if ($item->is_parapharse == 1) {
-                                    echo '<p class="text-primary">Đã phân tích</p>';
-                                } else {
-                                    echo '<p class="text-danger">Chưa phân tích</p>';
-                                }
-                            @endphp
-                        </li>
+
                         <li>
                             <div class="d-flex list_action">
                                 <button style="border:none" data-toggle="modal" data-target="#myModalEdit"

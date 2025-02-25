@@ -119,7 +119,7 @@
                                         <input type="text" name="english"
                                             class="form-control w-100 mb-2  @error('english') is-invalid @enderror"
                                             id="english" placeholder="Tiếng anh" value="{{ old('english') }}">
-                                        <span class="invalid-feedback" id="english-error"></span>
+                                        <span class="invalid-feedback" id="english-errors"></span>
                                     </div>
                                     <div
                                         class="group-input {{ $is_parapharse == 'parapharse' ? 'col-lg-4 flex-wrap-nowrap' : 'col-lg-3 mx-3 ' }} col-12">
