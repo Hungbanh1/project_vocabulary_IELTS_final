@@ -9,7 +9,7 @@
             var type = button.data('type');
             var id = button.data('id');
             var is_parapharse = button.data('is-parapharse');
-            $('#englishh').val(english);
+            $('#eng').val(english);
             $('#vn').val(vn);
             $('#type').val(type);
             $('#id').val(id);
@@ -26,24 +26,26 @@
                 <h4 class="modal-title">Sửa từ vựng</h4>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
+
             <div class="modal-body">
                 <form method="POST" action="{{ route('edit_vocabulary') }}">
                     @csrf
                     <input type="hidden" id="id" value="" name="id">
-                    <input type="text" id="englishh" value="" name="test">
                     <input type="text" id="is_parapharse" class="form-control d-none" name="is_parapharse"
                         value="">
                     <div class="form-group">
                         <label for="eng">Tiếng anh <strong class="text-danger">*</strong></label>
-                        <input type="text" class="form-control @error('english') is-invalid @enderror" name="eng"
-                            value="" id="eng" placeholder="Nhập từ tiếng anh">
-                        <span class="invalid-feedback" id="english-error"></span>
+                        <input type="text" class="form-control @error('eng') is-invalid @enderror" name="eng"
+                            value="{{ old('eng') }}" id="eng" placeholder="Nhập từ tiếng anh">
+                        <span class="invalid-feedback">{{ $errors->first('eng') }}</span>
                     </div>
                     <div class="form-group">
                         <label for="vn">Tiếng việt <strong class="text-danger">*</strong></label>
-                        <input type="text" class="form-control @error('vn') is-invalid @enderror" name="vn"
-                            value="" id="vn" placeholder="Nhập từ tiếng việt">
-                        <span class="invalid-feedback" id="vn-error"></span>
+                        <input type="text" class="form-control @error('vietnam')is-invalid @enderror" name="vn"
+                            value="{{ old('vn') }}" id="vn" placeholder="Nhập từ tiếng việt">
+                        @error('vietnam')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
                     </div>
                     <div class="form-group">
                         <label for="type">Loại từ <strong class="text-danger">*</strong></label>
@@ -99,3 +101,28 @@
         </div>
     </div>
 </div>
+{{-- <script>
+    $('#editForm').on('submit', function(e) {
+        e.preventDefault();
+        $('.is-invalid').removeClass('is-invalid');
+        $('.invalid-feedback').text('');
+
+        $.ajax({
+            type: 'POST',
+            url: '/edit_vocabulary', // Route của edit
+            data: $(this).serialize(),
+            success: function(response) {
+                location.reload(); // Reload sau khi edit thành công
+            },
+            error: function(xhr) {
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.errors;
+                    Object.keys(errors).forEach(function(field) {
+                        $('#' + field).addClass('is-invalid'); // Thêm class lỗi
+                        $('#' + field + '-error').text(errors[field][0]); // Hiển thị lỗi
+                    });
+                }
+            }
+        });
+    });
+</script> --}}

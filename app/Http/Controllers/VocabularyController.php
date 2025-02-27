@@ -75,9 +75,9 @@ class VocabularyController extends Controller
             'english.unique' => 'Từ vựng này đã tồn tại',
             'vietnam.required' => 'Từ vựng là trường bắt buộc.',
         ]);
-        // if ($validator->fails()) {
-        //     return response()->json(['errors' => $validator->errors()], 422);
-        // }
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
         $data = [
             'english' => $request->input('english'),
             'vietnam' => $request->input('vietnam'),
@@ -125,24 +125,47 @@ class VocabularyController extends Controller
     public function edit_vocabulary(Request $request)
     {
         // dd($request->all());
-        $messages = [
-            'english.required' => 'Từ vựng là trường bắt buộc',
-            'english.unique' => 'Từ vựng này đã tồn tại',
-            'vietnam.required' => 'Từ vựng là trường bắt buộc.',
-            'type.required' => 'Vui lòng chọn loại từ.',
-        ];
-        //unique:bc kiem tra ton tai cua email
+        // $messages = [
+        //     'english.required' => 'Từ vựng là trường bắt buộc',
+        //     'english.unique' => 'Từ vựng này đã tồn tại',
+        //     'vietnam.required' => 'Từ vựng là trường bắt buộc.',
+        //     'type.required' => 'Vui lòng chọn loại từ.',
+        // ];
+        // //unique:bc kiem tra ton tai cua email
+        // $request->validate([
+        //     'english' => 'required|unique:vocabularies,english,' . ($request->input('id') ?? 'NULL'),
+        //     'vietnam' => 'required',
+        //     'type' => 'required',
+        // ], $messages);
+        // $validator = Validator::make($request->all(), [
+        //     'eng' => 'required|unique:vocabularies',
+        //     'vn' => 'required',
+        //     'type' => 'required',
+        // ], [
+        //     'eng.required' => 'Từ vựng là trường bắt buộc',
+        //     'eng.unique' => 'Từ vựng này đã tồn tại',
+        //     'vn.required' => 'Từ vựng là trường bắt buộc.',
+        //     'type.required' => 'Vui lòng chọn loại từ.',
+
+        // ]);
         $request->validate([
-            'english' => 'required|unique:vocabularies', // Kiểm tra tính duy nhất của trường 'english' trong bảng 'vocabularies'
-            'vietnam' => 'required',
+            'eng' => 'required|unique:vocabularies,english,' . ($request->id ?? 'NULL'),
+            'vn' => 'required',
             'type' => 'required',
-        ], $messages);
+        ], [
+            'eng.required' => 'Từ vựng là trường bắt buộc',
+            'eng.unique' => 'Từ vựng này đã tồn tại',
+            'vn.required' => 'Từ vựng là trường bắt buộc.',
+            'type.required' => 'Vui lòng chọn loại từ.',
+        ]);
+  
         $data = [
             'id' => $request->input('id'),
             'english' => $request->input('eng'),
             'vietnam' => $request->input('vn'),
             'type_id' => $request->input('type'),
         ];
+        
         // dd($data);
         $this->VocabularyServices->editVocabulary($data);
         if($request->input('is_parapharse') == 1){
