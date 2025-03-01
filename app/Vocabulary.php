@@ -24,4 +24,8 @@ class Vocabulary extends Model
     {
         return $this->belongsTo(Type::class, 'type_id', 'id');
     }
+    public function parapharse()
+    {
+        return $this->hasMany(Parapharse::class, 'vocabulary_id', 'id');
+    }
 }

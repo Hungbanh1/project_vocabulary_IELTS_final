@@ -3,7 +3,6 @@ var defaultUrl = config.dataset.defaultUrl;
 var route_add = config.dataset.routeAdd;
 var route_add_parapharse = config.dataset.routeAddParapharse;
 var is_parapharse = config.dataset.isParapharse;
-
 //add vocabulary
 $('.btn-add-vocabulary').click(function(e) {
     e.preventDefault(); // Ngăn form submit
@@ -58,7 +57,7 @@ $('.btn-add-vocabulary').click(function(e) {
                     
                     // Duyệt qua từng lỗi và hiển thị dưới input
                     Object.keys(errors).forEach(function(key) {
-                        console.log(key);
+                        // console.log(key);
                         
                         $("#" + key).addClass(
                             "is-invalid"); // Thêm class đỏ vào input

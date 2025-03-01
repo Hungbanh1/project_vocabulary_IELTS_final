@@ -21,14 +21,18 @@ class VocabularyRepositories
         // return Vocabulary::all();
         // $vocabulary = Vocabulary::orderBy('english', 'asc')->get();
         // $type = Type::all();
-        return Vocabulary::orderBy('english', 'asc')->get();
+        return Vocabulary::orderBy('english', 'asc')->paginate(200);
         // return view('index', compact('vocabulary', 'type'));
     }
     public function getAllParapharse()
     {
       
-        return Vocabulary::where('is_parapharse', '!=', 0)
-                        ->orderBy('english', 'asc')->get();
+      
+                    $vocabularies = Vocabulary::with('parapharse')
+                    ->where('is_parapharse', '!=', 0)
+                    ->orderBy('english', 'asc')
+                    ->get();
+                    return $vocabularies;
     }
     public function getType()
     {
@@ -72,7 +76,7 @@ class VocabularyRepositories
 
     public function createVocabulary($data)
     {
-
+        
         return Vocabulary::create($data);
     }
     public function createParapharse($data)
@@ -93,6 +97,17 @@ class VocabularyRepositories
 
     public function deleteVocabulary($id)
     {
-        return Vocabulary::destroy($id);
+        // return Vocabulary::destroy($id);
+        $vocabulary = Vocabulary::find($id);
+
+        if ($vocabulary) {
+            // Xóa danh sách liên quan trong bảng parapharse
+            $vocabulary->parapharse()->destroy();
+
+            // Xóa từ vựng
+            return $vocabulary->destroy();
+        }
+
+        return false;
     }
 }

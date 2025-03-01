@@ -6,10 +6,10 @@
             var vn = button.data('vn');
             var type = button.data('type');
             var id = button.data('id');
-            // $('#eng').val(eng);
-            // $('#vn').val(vn);
-            // $('#type').val(type);
+            var ModalParapharse = this.id;
             $('#vocabulary_id').val(id);
+            $('#type_route').val(ModalParapharse);
+
         });
     });
 </script>
@@ -25,15 +25,18 @@
             <div class="modal-body">
                 <form method="POST" action="{{ route('add_parapharse') }}">
                     @csrf
+                    <input type="hidden" name="modal" value="ModalParapharse">
                     <div class="form-group">
                         <label for="eng">Tiếng anh <strong class="text-danger">*</strong></label>
-                        <input type="text" class="form-control" name="english" value="" id="english"
-                            placeholder="Nhập từ tiếng anh">
+                        <input type="text" class="form-control  @error('eng') is-invalid @enderror" name="eng"
+                            value="" id="eng" placeholder="Nhập từ tiếng anh">
+                        <span class="invalid-feedback">{{ $errors->first('eng') }}</span>
                     </div>
                     <div class="form-group">
-                        <label for="vietnam">Tiếng việt <strong class="text-danger">*</strong></label>
-                        <input type="text" class="form-control" name="vietnam" value="" id="vietnam"
-                            placeholder="Nhập từ tiếng việt">
+                        <label for="vn">Tiếng việt <strong class="text-danger">*</strong></label>
+                        <input type="text" class="form-control  @error('vn') is-invalid @enderror" name="vn"
+                            value="" id="vn" placeholder="Nhập từ tiếng việt">
+                        <span class="invalid-feedback">{{ $errors->first('vn') }}</span>
                     </div>
                     <input type="text" id="vocabulary_id" class="form-control d-none" name="vocabulary_id"
                         value="">

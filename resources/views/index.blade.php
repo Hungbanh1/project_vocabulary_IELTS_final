@@ -3,7 +3,24 @@
 @section('content')
     @include('modal.modal_edit')
     @include('modal.modal_list_parapharse')
-
+    @include('modal.modal_parapharse')
+    {{-- @if ($errors->any())
+        <script>
+            $(document).ready(function() {
+                $("#myModalEdit").modal('show');
+            });
+        </script>
+    @endif --}}
+    @if (session('message'))
+        <script>
+            Swal.fire({
+                title: "Thành công!",
+                text: "{{ session('message') }}",
+                icon: "success",
+                confirmButtonText: "OK"
+            });
+        </script>
+    @endif
     <div class="container mt-5">
         <div class="row" id="main_content">
             @php
@@ -55,11 +72,17 @@
                                     data-id="{{ $item->id }}">
                                     <i class="fa-solid fa-plus" style="color:#44ca44"></i>
                                 </button> --}}
-                                <button style="border:none; margin-left:5px" data-toggle="modal"
+                                {{-- <button style="border:none; margin-left:5px" data-toggle="modal"
                                     data-target="#ModalListParapharse" data-eng="{{ $item->english }}"
                                     data-vn="{{ $item->vietnam }}" data-type="{{ $item->type->id }}"
                                     data-id="{{ $item->id }}">
                                     <i class="fa-solid fa-expand"></i>
+                                </button> --}}
+                                <button style="border:none; margin-left:5px" data-toggle="modal"
+                                    data-target="#ModalParapharse" data-eng="{{ $item->english }}"
+                                    data-vn="{{ $item->vietnam }}" data-type="{{ $item->type->id }}"
+                                    data-id="{{ $item->id }}">
+                                    <i class="fa-solid fa-plus" style="color:#44ca44"></i>
                                 </button>
 
 

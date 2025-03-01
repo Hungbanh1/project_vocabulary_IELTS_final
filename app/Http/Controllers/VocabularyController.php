@@ -45,13 +45,23 @@ class VocabularyController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-       
-        $data = [
-            'english' => $request->input('english'),
-            'vietnam' => $request->input('vietnam'),
-            'type_id' => $request->input('type_vocabulary'),
-            'is_parapharse' => (int) $request->input('is_parapharse'), // Ép kiểu thành số nguyên
-        ];
+        $type = (int) $request->input('type_vocabulary');
+        if($type == 6){
+            $data = [
+                'english' => $request->input('english'),
+                'vietnam' => $request->input('vietnam'),
+                'type_id' => $request->input('type_vocabulary'),
+                'is_parapharse' => 1, // Ép kiểu thành số nguyên
+            ];
+        }else{
+            $data = [
+                'english' => $request->input('english'),
+                'vietnam' => $request->input('vietnam'),
+                'type_id' => $request->input('type_vocabulary'),
+                'is_parapharse' => (int) $request->input('is_parapharse'), // Ép kiểu thành số nguyên
+            ];
+        }
+      
         $this->VocabularyServices->createVocabulary($data);
         // return response()->json([
         //     'redirect_url' => url('/') // Trả về URL redirect
@@ -66,27 +76,25 @@ class VocabularyController extends Controller
     }
     function add_parapharse(Request $request)
     {
-        // dd($request->all());
-        $validator = Validator::make($request->all(), [
-            'english' => 'required|unique:parapharse',
-            'vietnam' => 'required',
+        
+        $request->validate([
+            'eng' => 'required|unique:parapharse,english',  
+            'vn' => 'required',
         ], [
-            'english.required' => 'Từ vựng là trường bắt buộc',
-            'english.unique' => 'Từ vựng này đã tồn tại',
-            'vietnam.required' => 'Từ vựng là trường bắt buộc.',
+            'eng.required' => 'Từ vựng là trường bắt buộc',
+            'eng.unique' => 'Từ vựng này đã tồn tại',
+            'vn.required' => 'Từ vựng là trường bắt buộc.',
         ]);
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
+      
         $data = [
-            'english' => $request->input('english'),
-            'vietnam' => $request->input('vietnam'),
+            'english' => $request->input('eng'),
+            'vietnam' => $request->input('vn'),
             'vocabulary_id' => $request->input('vocabulary_id'),
         ];
  
         $this->VocabularyServices->createParapharse($data);
-  
         return redirect('/parapharse')->with('message', "Thêm parapharse thành công");
+       
     }
     function search(Request $request)
     {
@@ -124,45 +132,22 @@ class VocabularyController extends Controller
     }
     public function edit_vocabulary(Request $request)
     {
-        // dd($request->all());
-        // $messages = [
-        //     'english.required' => 'Từ vựng là trường bắt buộc',
-        //     'english.unique' => 'Từ vựng này đã tồn tại',
-        //     'vietnam.required' => 'Từ vựng là trường bắt buộc.',
-        //     'type.required' => 'Vui lòng chọn loại từ.',
-        // ];
-        // //unique:bc kiem tra ton tai cua email
-        // $request->validate([
-        //     'english' => 'required|unique:vocabularies,english,' . ($request->input('id') ?? 'NULL'),
-        //     'vietnam' => 'required',
-        //     'type' => 'required',
-        // ], $messages);
-        // $validator = Validator::make($request->all(), [
-        //     'eng' => 'required|unique:vocabularies',
-        //     'vn' => 'required',
-        //     'type' => 'required',
-        // ], [
-        //     'eng.required' => 'Từ vựng là trường bắt buộc',
-        //     'eng.unique' => 'Từ vựng này đã tồn tại',
-        //     'vn.required' => 'Từ vựng là trường bắt buộc.',
-        //     'type.required' => 'Vui lòng chọn loại từ.',
 
-        // ]);
         $request->validate([
-            'eng' => 'required|unique:vocabularies,english,' . ($request->id ?? 'NULL'),
-            'vn' => 'required',
+            'eng_edit' => 'required|unique:vocabularies,english,' . ($request->id ?? 'NULL'),
+            'vn_edit' => 'required',
             'type' => 'required',
         ], [
-            'eng.required' => 'Từ vựng là trường bắt buộc',
-            'eng.unique' => 'Từ vựng này đã tồn tại',
-            'vn.required' => 'Từ vựng là trường bắt buộc.',
+            'eng_edit.required' => 'Từ vựng là trường bắt buộc',
+            'eng_edit.unique' => 'Từ vựng này đã tồn tại',
+            'vn_edit.required' => 'Từ vựng là trường bắt buộc.',
             'type.required' => 'Vui lòng chọn loại từ.',
         ]);
   
         $data = [
             'id' => $request->input('id'),
-            'english' => $request->input('eng'),
-            'vietnam' => $request->input('vn'),
+            'english' => $request->input('eng_edit'),
+            'vietnam' => $request->input('vn_edit'),
             'type_id' => $request->input('type'),
         ];
         
@@ -194,7 +179,8 @@ class VocabularyController extends Controller
         ]);
     }
     public function delete_parapharse($id){
-        $vocabulary = Parapharse::find($id);
+        // $vocabulary = Parapharse::find($id);
+        $vocabulary = Vocabulary::find($id);
         // dd($vocabulary);
         if (!$vocabulary) {
             return response()->json([
@@ -207,7 +193,7 @@ class VocabularyController extends Controller
         $vocabulary->delete();
         return response()->json([
             'success' => true,
-            'message' => 'Xoá từ vựng thành công',
+            'message' => 'Tuyệt vời! Bạn đã xoá thành công!',
             'redirect_url' => url('/parapharse') // Trả về URL redirect
         ]);
     }
@@ -238,7 +224,7 @@ class VocabularyController extends Controller
 
         $type = $this->VocabularyServices->getType();
         $vocabulary = $this->VocabularyServices->getAllParapharse();
-
+        // dd($vocabulary);
         return view('parapharse.index', compact('vocabulary', 'type'));
     }
     // public function Parapharse()
