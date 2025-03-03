@@ -31,10 +31,13 @@
         </div>
 
     </div>
-    <script>
+    {{-- <script>
         var page = 1;
+        var lastKeyword = "";
+        var isSearching = false;
+        var canLoadMore = true;
         $(window).scroll(function() {
-            if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
+            if (canLoadMore && $(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
                 page++; // Tăng page lên
                 infinteLoadMore(page);
 
@@ -43,20 +46,29 @@
                     $.ajax({
                         url: "?page=" + page,
                         // dataType: 'html',
+                        data: {
+                            keyword: isSearching ? lastKeyword : "", // Chỉ lấy từ khóa đang tìm
+                            page: page,
+                        },
                         type: "GET",
                         success: function(data) {
-                            // console.log(data.html);
+                            console.log("day la data load");
+                            console.log(data);
+
+                            // if (data.vocabulary.length < 10) {
+                            //     canLoadMore = false;
+                            // } else {
+                            //     canLoadMore = false;
+                            // }
                             setTimeout(function() {
                                 $(".content").removeClass("loading");
                                 $("#main_content").append(data.html);
 
                             }, 500);
                         },
-
-
                     });
                 }
             }
         });
-    </script>
+    </script> --}}
 @endsection

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\VocabularyRepositories;
+use Illuminate\Http\Request;
 
 class VocabularyServices
 {
@@ -25,17 +26,17 @@ class VocabularyServices
     {
         return $this->VocabularyRepositories->getAllParapharse();
     }
-    public function searchAjax($getKeyword)
+    public function searchAjax($getKeyword,$lastUrl)
     {
-        return $this->VocabularyRepositories->searchAjax($getKeyword);
+        return $this->VocabularyRepositories->searchAjax($getKeyword,$lastUrl);
     }
     public function search($getKeyword)
     {
         return $this->VocabularyRepositories->search($getKeyword);
     }
-    public function filterByType($typeId)
+    public function filterByType($typeId, Request $request)
     {
-        return $this->VocabularyRepositories->filterByType($typeId);
+        return $this->VocabularyRepositories->filterByType($typeId, $request);
     }
     public function editVocabulary($data)
     {

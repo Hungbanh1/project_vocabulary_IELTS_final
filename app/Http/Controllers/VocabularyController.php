@@ -9,6 +9,8 @@ use App\Parapharse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
+use Log;
+
 class VocabularyController extends Controller
 {
     //
@@ -23,21 +25,47 @@ class VocabularyController extends Controller
     {
         $type = $this->VocabularyServices->getType();
         $vocabulary = $this->VocabularyServices->getAllVocabularies();
+  
+        // dd($vocabulary1);
         if ($request->ajax()) {
-            $view = view('loadmore',compact('vocabulary','type'))->render();
+            Log::info('Request AJAX vào index controller');
+            $getKeyword = $request->keyword;
+            $lastUrl = '';
+            $vocabulary = $this->VocabularyServices->searchAjax($getKeyword, $lastUrl);
+            $view = view('loadmore',compact('vocabulary'))->render();
+            return response()->json(
+                [
+                'html' => $view,
+                'keyword' => $getKeyword,
+                'vocabulary' => $vocabulary
+                ]
+            );
+        }
+        return view('index', compact('vocabulary', 'type'));
+    }
+    public function filterByType($typeId, Request $request = null)
+    {
+  
+        $type = $this->VocabularyServices->getType();
+        $vocabulary = $this->VocabularyServices->filterByType($typeId, $request);
+      
+        $view = view('loadmore',compact('vocabulary'))->render();
+        if ($request->ajax()) {
+            Log::info('Request AJAX vào filterByType controller');
+            $view = view('loadmore', compact('vocabulary'))->render();
             return response()->json(['html' => $view]);
         }
         return view('index', compact('vocabulary', 'type'));
     }
-    function loadmore(Request $request){
-        $type = $this->VocabularyServices->getType();
-        $vocabulary = $this->VocabularyServices->getAllVocabularies();
-        // dd($vocabulary);
-        if ($request->ajax()) {
-            return view('loadmore', compact('vocabulary','type'))->render();
-        }
-        return view('loadmore', compact('vocabulary', 'type'));
-    }
+    // function loadmore(Request $request){
+    //     $type = $this->VocabularyServices->getType();
+    //     $vocabulary = $this->VocabularyServices->getAllVocabularies();
+    //     // dd($vocabulary);
+    //     if ($request->ajax()) {
+    //         return view('loadmore', compact('vocabulary','type'))->render();
+    //     }
+    //     return view('loadmore', compact('vocabulary', 'type'));
+    // }
     
     public function Parapharse(){
 
@@ -149,33 +177,25 @@ class VocabularyController extends Controller
     public function searchajax(Request $request, $suffitx = 'VNĐ')
     {
 
-        $getKeyword = '';
-        // return "keyword ajax:$keyword";
+        // $getKeyword = '';
+        // // return "keyword ajax:$keyword";
 
-        if ($request->input('keyword')) {
-            $getKeyword = $request->input('keyword');
-        }
+        // if ($request->keyword) {
+        //     $getKeyword = $request->keyword;
+        // }
 
-        $getKeyword = $request->input('keyword');
-        return $this->VocabularyServices->searchAjax($getKeyword);
+            $data_get = $request->all();
+      
+
+        $getKeyword = $request->keyword;
+        $lastUrl = $request->lastUrl;
+        $vocabulary =  $this->VocabularyServices->searchAjax($getKeyword, $lastUrl);
+        return response()->json([
+            'data' => $vocabulary,
+            'lastUrl' => $lastUrl,
+        ]);
     }
-    public function filterByType($typeId, Request $request = null)
-    {
-        // $type = $this->VocabularyServices->getType();
-        // $vocabulary = $this->VocabularyServices->filterByType($typeId);
-        // return view('index', compact('vocabulary', 'type'));
-        if (!$request) {
-            $request = request(); // Lấy request từ Laravel
-        }
-        $type = $this->VocabularyServices->getType();
-        $vocabulary = $this->VocabularyServices->filterByType($typeId);
-
-        if ($request->ajax()) {
-            $view = view('loadmore',compact('vocabulary','type'))->render();
-            return response()->json(['html' => $view]);
-        }
-        return view('index', compact('vocabulary', 'type'));
-    }
+  
     public function edit_vocabulary(Request $request)
     {
 
@@ -245,26 +265,26 @@ class VocabularyController extends Controller
     }
     public function adv()
     {
-        return $this->filterByType(1);
+        return $this->filterByType(1,request());
     }
 
     public function adj()
     {
-        return $this->filterByType(2);
+        return $this->filterByType(2,request());
     }
 
     public function V()
     {
-        return $this->filterByType(3);
+        return $this->filterByType(3,request());
     }
 
     public function N()
     {
-        return $this->filterByType(4);
+        return $this->filterByType(4,request());
     }
     public function Phrase()
     {
-        return $this->filterByType(5);
+        return $this->filterByType(5,request());
     }
   
     // public function Parapharse()

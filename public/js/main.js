@@ -2,10 +2,19 @@ var config = document.getElementById("config");
 var route_search = document.getElementsByClassName("route_search");
 
 var defaultUrl = config.dataset.defaultUrl;
+var lastUrl = config.dataset.lastUrl;
+var fullUrl = config.dataset.fullUrl;
 var route_add = config.dataset.routeAdd;
 var route_add_parapharse = config.dataset.routeAddParapharse;
 var is_parapharse = config.dataset.isParapharse;
 var route_search = route_search[0].dataset.routeSearch;
+let isLastPage = false; // Biến kiểm tra đã tải hết dữ liệu hay chưa
+
+var page = 1;
+var lastKeyword = "";
+var isSearching = false;
+var canLoadMore;
+var totalRecords = 0;
 
 $('.btn-add-vocabulary').click(function(e) {
     e.preventDefault(); // Ngăn form submit
@@ -322,9 +331,19 @@ $(document).ready(function() {
     };
     $('.keyword').keyup(function() {
         clearTimeout(timeout);
+        const keyword = $('.keyword').val();
+        
+            if (keyword !== lastKeyword) {
+                lastKeyword = keyword;
+                canLoadMore = true; // Reset loadMore
+                page = 1; 
+                isSearching = keyword !== "";
+                $("#main_content").empty();
+            }
         timeout = setTimeout(function() {
             var data = {
-                keyword: $('.keyword').val(),
+                keyword: keyword,
+                lastUrl: lastUrl,
             };
             // console.log(data);
 
@@ -334,11 +353,28 @@ $(document).ready(function() {
                 data: data,
                 url: url,
                 success: function(data) {
-                    $('#main_content').empty();
-                    // console.log(data.vocabulary);
+                    console.log(data);
 
-                    if (data.vocabulary.length > 0) {
-                        var content = data.vocabulary.map(function(value,
+                    // console.log(data.data.vocabulary.data);
+                    
+                    $('#main_content').empty();
+                    // console.log(data.data);
+                    // var count = data.data.vocabulary.total;
+                    var count = data.data.total;
+                    totalRecords = count;
+                    console.log(totalRecords);
+                    
+                    if (count >= 0) {
+                        $('.total_vocabulary').html(`
+                            <p>Hiện tại có: <span class="text-danger">${count}</span> từ vựng</p>
+                        `);
+                    } 
+                     if (totalRecords < 10) {
+                        canLoadMore = false;
+                    }
+                    if (totalRecords > 0) {
+                        // var content = data.data.vocabulary.data.map(function(value,
+                        var content = data.data.data.map(function(value,
                             index) {
                             return createVocabularyItem(index, value);
                         }).join('');
@@ -351,6 +387,7 @@ $(document).ready(function() {
                     </div>
                 </div>
             `);
+            // canLoadMore = false;
                     }
                 },
                 error: function(xhr, ajaxOptions, thrownError) {
@@ -359,4 +396,42 @@ $(document).ready(function() {
             });
         }, 200);
     });
+});
+let isLoading = false;
+$(window).scroll(function() {
+    if (isLoading || isLastPage) return; 
+    if ( $(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
+        page++; // Tăng page lên
+        infinteLoadMore(page);
+
+        function infinteLoadMore(page) {
+            $('.content').addClass("loading");
+            $.ajax({
+                // url: "?page=" + page,
+                url: fullUrl + "?page=" + page,
+                // dataType: 'html',
+                data: {
+                    keyword: isSearching ? lastKeyword : "", // Chỉ lấy từ khóa đang tìm
+                    // page: page,
+                },
+                type: "GET",
+                success: function(data) {
+                    // console.log(fullUrl + "?page=" + page);
+                    
+                    // console.log(data);
+                    // console.log("success");
+                    if (!data.html.trim()) { // Nếu không có dữ liệu trả về
+                        isLastPage = true; // Đánh dấu đã load hết dữ liệu
+                        return;
+                    }
+                    
+                    setTimeout(function() {
+                        $(".content").removeClass("loading");
+                        // $("#main_content").append(data.html);
+                        $("#main_content").append(data.html);
+                    }, 1000);
+                },
+            });
+        }
+    }
 });

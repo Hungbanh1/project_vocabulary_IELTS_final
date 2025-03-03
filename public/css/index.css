@@ -59,7 +59,10 @@ ul.no-marker {
 .content.loading {
     position: relative;
 }
-
+.content {
+    position: relative;
+    min-height: 100vh; /* Chiếm toàn bộ chiều cao màn hình */
+}
 .content.loading::before {
     content: "";
     position: absolute;

@@ -31,7 +31,7 @@ class VocabularyRepositories
     public function getAllParapharse()
     {
     
-                    $perPage = 100; 
+                    $perPage = 60; 
       
                     $vocabularies = Vocabulary::with('parapharse')
                     ->where('is_parapharse', '!=', 0)
@@ -44,21 +44,41 @@ class VocabularyRepositories
         return Type::all();
     }
 
-    public function searchAjax($getKeyword)
+    // public function searchAjax($getKeyword,$lastUrl = null)
+    public function searchAjax($getKeyword,$lastUrl)
     {
-        $vocabulary = Vocabulary::where('english', 'LIKE', "$getKeyword%")->get();
-        return $data = [
-            'vocabulary' => $vocabulary,
+        $query = Vocabulary::where('english', 'LIKE', "$getKeyword%");
+        
+        // Mapping các URL với type_id
+        $typeMap = [
+            'adv' => 1,
+            'adj' => 2,
+            'V' => 3,
+            'N' => 4,
+            'Phrase' => 5,
+            'parapharse' => 6,
         ];
+    
+        // Kiểm tra nếu $lastUrl có trong typeMap thì thêm điều kiện where
+        if (array_key_exists($lastUrl, $typeMap)) {
+            $query->where('type_id', $typeMap[$lastUrl]);
+        }
+    
+        // $vocabulary = $query->get();
+        $vocabulary = $query->paginate(100)->appends(['keyword' => $getKeyword]);
+        return $vocabulary;
+        // return $data = [
+        //     'vocabulary' => $vocabulary,
+        // ];
     }
     public function search($getKeyword)
     {
         $vocabulary = Vocabulary::where('english', 'LIKE', "$getKeyword%")
-            ->paginate(100);    
+            ->paginate(50);    
         return $vocabulary;
     }
 
-    public function filterByType($typeId)
+    public function filterByType($typeId, Request $request)
     {
         $perPage = 100; 
 

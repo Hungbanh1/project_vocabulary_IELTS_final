@@ -29,15 +29,12 @@
     @php
         $fullUrl = request()->fullUrl();
         $defaultUrl = url('/');
-        $custom_url = Str::afterLast($fullUrl, '/');
-        $is_parapharse = $custom_url;
+        $lastUrl = Str::afterLast($fullUrl, '/');
+        $is_parapharse = $lastUrl;
         $type_of_voca = request()->segment(1); // adj , adv ,...
-        // $defaultUrl = url('/');
-        // $type_of_voca = request()->segment(1); // adj , adv ,...
-        // $fullUrl = request()->fullUrl();
     @endphp
 
-    <div id="wp-content" class="bg-white content ">
+    <div id="wp-content" class="bg-white content">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container ">
                 <a class="navbar-brand" href="{{ url('/') }}">Vocabulary</a>
@@ -99,11 +96,10 @@
 
                             {{-- </form> --}}
                         </div>
-                        <div class="mt-5">
+                        <div class="mt-5 total_vocabulary">
                             @if (isset($vocabulary) && !empty($vocabulary))
                                 <p>Hiện tại có : <span class="text-danger">{{ $vocabulary->total() }}</span>
                                     từ vựng</p>
-                            @else
                             @endif
                         </div>
                     </div>
@@ -198,7 +194,8 @@
         @yield('content')
         <div id="config" class="d-none" data-default-url="{{ $defaultUrl }}"
             data-route-add="{{ route('add') }}" data-route-add-parapharse="{{ route('add_parapharse') }}"
-            data-is-parapharse={{ $is_parapharse }}>
+            data-is-parapharse={{ $is_parapharse }} data-last-url = "{{ $lastUrl }}"
+            data-full-url="{{ $fullUrl }}">
         </div>
     </div>
 </body>
