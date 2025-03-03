@@ -119,7 +119,7 @@ ul.no-marker {
     }
 
     .vocabulary-item li {
-        justify-content: space-between;
+        /* justify-content: space-between; */
     }
     .vocabulary-vn {
         display: -webkit-box;

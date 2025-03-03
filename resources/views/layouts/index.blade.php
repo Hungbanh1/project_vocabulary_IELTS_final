@@ -89,19 +89,19 @@
             <div class="head mb-5">
                 <div class="row justify-content-end">
                     <div class="col-lg-3 col-12">
-                        <div class="search">
-                            <form action="{{ route('search') }}" method="GET">
-                                <div class="d-flex">
-                                    <input type="text" class="form-control keyword" name="keyword" id="keyword"
-                                        placeholder="Từ vựng">
-                                    <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
-                                </div>
+                        <div class="search ">
+                            {{-- <form action="{{ route('search') }}" method="GET"> --}}
+                            <div class="d-flex route_search" data-route-search="{{ route('search') }}">
+                                <input type="text" class="form-control keyword" name="keyword" id="keyword"
+                                    placeholder="Từ vựng">
+                                <button type="submit" class="btn btn-primary w-100 btn-search">Tìm kiếm</button>
+                            </div>
 
-                            </form>
+                            {{-- </form> --}}
                         </div>
                         <div class="mt-5">
                             @if (isset($vocabulary) && !empty($vocabulary))
-                                <p>Hiện tại có : <span class="text-danger">{{ count($vocabulary) }}</span>
+                                <p>Hiện tại có : <span class="text-danger">{{ $vocabulary->total() }}</span>
                                     từ vựng</p>
                             @else
                             @endif

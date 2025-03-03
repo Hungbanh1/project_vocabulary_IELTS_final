@@ -19,61 +19,80 @@ class VocabularyController extends Controller
         $this->VocabularyServices = $VocabularyServices;
     }
 
-    function index()
+    function index(Request $request)
     {
-        // $test = VocabularyService::getAllVocabularies();
-        // $vocabulary = Vocabulary::orderBy('english', 'asc')->get();
+        $type = $this->VocabularyServices->getType();
+        $vocabulary = $this->VocabularyServices->getAllVocabularies();
+        if ($request->ajax()) {
+            $view = view('loadmore',compact('vocabulary','type'))->render();
+            return response()->json(['html' => $view]);
+        }
+        return view('index', compact('vocabulary', 'type'));
+    }
+    function loadmore(Request $request){
         $type = $this->VocabularyServices->getType();
         $vocabulary = $this->VocabularyServices->getAllVocabularies();
         // dd($vocabulary);
+        if ($request->ajax()) {
+            return view('loadmore', compact('vocabulary','type'))->render();
+        }
+        return view('loadmore', compact('vocabulary', 'type'));
+    }
+    
+    public function Parapharse(){
 
-        return view('index', compact('vocabulary', 'type'));
+        $type = $this->VocabularyServices->getType();
+        $vocabulary = $this->VocabularyServices->getAllParapharse();
+        // dd($vocabulary);
+        return view('parapharse.index', compact('vocabulary', 'type'));
     }
     function add(Request $request)
     {
-        
-        $validator = Validator::make($request->all(), [
-            'english' => 'required|unique:vocabularies',
+        $request->validate([
+            'english' => 'required|unique:vocabularies',  
             'vietnam' => 'required',
-            'type_vocabulary' => 'required', // Đúng với AJAX gửi lên
+            'type_vocabulary' => 'required', 
         ], [
-            'type_vocabulary.required' => 'Vui lòng chọn loại từ.',
             'english.required' => 'Từ vựng là trường bắt buộc',
             'english.unique' => 'Từ vựng này đã tồn tại',
             'vietnam.required' => 'Từ vựng là trường bắt buộc.',
+            'type_vocabulary.required' => 'Vui lòng chọn loại từ.',
         ]);
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-        $type = (int) $request->input('type_vocabulary');
+      
+        $type = $request->type_vocabulary;
         if($type == 6){
             $data = [
-                'english' => $request->input('english'),
-                'vietnam' => $request->input('vietnam'),
-                'type_id' => $request->input('type_vocabulary'),
-                'is_parapharse' => 1, // Ép kiểu thành số nguyên
+                'english' => $request->english,
+                'vietnam' => $request->vietnam,
+                'type_id' =>  $type,
+                'is_parapharse' => 1, 
             ];
         }else{
             $data = [
-                'english' => $request->input('english'),
-                'vietnam' => $request->input('vietnam'),
-                'type_id' => $request->input('type_vocabulary'),
-                'is_parapharse' => (int) $request->input('is_parapharse'), // Ép kiểu thành số nguyên
+                'english' => $request->english,
+                'vietnam' => $request->vietnam,
+                'type_id' =>  $type,
+                'is_parapharse' => $request->is_parapharse, // Ép kiểu thành số nguyên
             ];
         }
-      
+        
         $this->VocabularyServices->createVocabulary($data);
-        // return response()->json([
-        //     'redirect_url' => url('/') // Trả về URL redirect
-        // ]);
-        // $vocabulary->save();
-        // return response()->json(['message' => 'Thêm từ vựng thành công!'], 200);
-        if($request->input('is_parapharse') == 1){
-            
-            return redirect('/parapharse');
+     
+        if($request->is_parapharse == 1){
+            return response()->json([
+                'success' => true,
+                'redirect_url' => url('/parapharse') // Trả về URL redirect
+            ]);
         }
-        return redirect('/');
+        else{
+            return response()->json([
+                'success' => true,
+                'redirect_url' => url('/') // Trả về URL redirect
+            ]);
+        }
+       
     }
+    
     function add_parapharse(Request $request)
     {
         
@@ -85,31 +104,47 @@ class VocabularyController extends Controller
             'eng.unique' => 'Từ vựng này đã tồn tại',
             'vn.required' => 'Từ vựng là trường bắt buộc.',
         ]);
-      
+        // $data_get = $request->all();
+        // return response()->json([
+        //     'status' => 'success',
+        //     'received_data' => $data_get
+        // ]);
+        // exit;
         $data = [
-            'english' => $request->input('eng'),
-            'vietnam' => $request->input('vn'),
-            'vocabulary_id' => $request->input('vocabulary_id'),
+            'english' => $request->eng,
+            'vietnam' => $request->vn,
+            'vocabulary_id' => $request->vocabulary_id,
         ];
  
         $this->VocabularyServices->createParapharse($data);
+        
         return redirect('/parapharse')->with('message', "Thêm parapharse thành công");
        
     }
     function search(Request $request)
     {
-        $getKeyword = '';
-        // return "keyword ajax:$keyword";
-
-        if ($request->input('keyword')) {
-            $getKeyword = $request->input('keyword');
-        }
-
-        $getKeyword = $request->input('keyword');
+      
+        $keyword = $request->keyword;
+     
         $type = $this->VocabularyServices->getType();
-        $vocabulary = $this->VocabularyServices->search($getKeyword);
-
-        return view('index', compact('vocabulary', 'type'));
+        $vocabulary = $this->VocabularyServices->search($keyword);
+        $record = $vocabulary->total();
+        if($record !=0){
+            return response()->json([
+                'status' => true,
+                'message' => 'Có từ vựng',
+                'redirect_url' => url('/'),
+            ]);
+        }
+        else{
+            return response()->json([
+                'status' => false,
+                'message' => 'Không tìm thấy từ vựng!',
+                'redirect_url' => url('/'),
+            ]);
+        }
+       
+        
     }
     public function searchajax(Request $request, $suffitx = 'VNĐ')
     {
@@ -124,10 +159,21 @@ class VocabularyController extends Controller
         $getKeyword = $request->input('keyword');
         return $this->VocabularyServices->searchAjax($getKeyword);
     }
-    private function filterByType($typeId)
+    public function filterByType($typeId, Request $request = null)
     {
+        // $type = $this->VocabularyServices->getType();
+        // $vocabulary = $this->VocabularyServices->filterByType($typeId);
+        // return view('index', compact('vocabulary', 'type'));
+        if (!$request) {
+            $request = request(); // Lấy request từ Laravel
+        }
         $type = $this->VocabularyServices->getType();
         $vocabulary = $this->VocabularyServices->filterByType($typeId);
+
+        if ($request->ajax()) {
+            $view = view('loadmore',compact('vocabulary','type'))->render();
+            return response()->json(['html' => $view]);
+        }
         return view('index', compact('vocabulary', 'type'));
     }
     public function edit_vocabulary(Request $request)
@@ -220,13 +266,7 @@ class VocabularyController extends Controller
     {
         return $this->filterByType(5);
     }
-    public function Parapharse(){
-
-        $type = $this->VocabularyServices->getType();
-        $vocabulary = $this->VocabularyServices->getAllParapharse();
-        // dd($vocabulary);
-        return view('parapharse.index', compact('vocabulary', 'type'));
-    }
+  
     // public function Parapharse()
     // {
     //     return $this->filterByType(6);

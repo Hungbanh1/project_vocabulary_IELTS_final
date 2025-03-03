@@ -26,7 +26,7 @@
 
                     $t++;
                 @endphp
-                <div class="col-xl-6 col-sm-6 vocabulary-item">
+                <div class="col-xl-6 col-sm-6 vocabulary-item ">
                     <ul class="list-unstyled">
                         <li class="d-flex align-items-center mb-2" style="flex-wrap: wrap">
                             <p class="mr-2">{{ $t }}/</p>

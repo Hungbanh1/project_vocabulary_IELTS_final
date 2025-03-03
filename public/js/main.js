@@ -1,9 +1,12 @@
 var config = document.getElementById("config");
+var route_search = document.getElementsByClassName("route_search");
+
 var defaultUrl = config.dataset.defaultUrl;
 var route_add = config.dataset.routeAdd;
 var route_add_parapharse = config.dataset.routeAddParapharse;
 var is_parapharse = config.dataset.isParapharse;
-//add vocabulary
+var route_search = route_search[0].dataset.routeSearch;
+
 $('.btn-add-vocabulary').click(function(e) {
     e.preventDefault(); // Ngăn form submit
     $('.content').addClass("loading");
@@ -14,13 +17,13 @@ $('.btn-add-vocabulary').click(function(e) {
     const vietnam = $("#vietnam").val();
     const type_vocabulary  = $("#type_vocabulary").val();
     console.log(defaultUrl);
-    if(is_parapharse == "parapharse"){
+    console.log("dayladas...");
+    
+    if(is_parapharse == "parapharse" || type_vocabulary == 6){
         var new_is_parapharse = 1
     }else{
         var new_is_parapharse = 0
     }
-
-    
     data = {
         english: english,
         vietnam: vietnam,
@@ -36,7 +39,7 @@ $('.btn-add-vocabulary').click(function(e) {
         type: "POST",
         data: data,
         success: function(response) {
-            $('.content').html(response);
+            $('.content').append(response);
             setTimeout(function() {
                 $(".content").removeClass("loading");
                 Swal.fire({
@@ -44,6 +47,10 @@ $('.btn-add-vocabulary').click(function(e) {
                     text: "Thêm từ vựng thành công!",
                     icon: "success",
                     confirmButtonText: "OK"
+                }).then(() =>{
+                    setTimeout(() => {
+                        window.location.href = response.redirect_url;
+                    }, 200);
                 });
             }, 500);
         },
@@ -106,6 +113,10 @@ $('.btn-add-parapharse').click(function(e) {
                     text: "Thêm từ vựng thành công!",
                     icon: "success",
                     confirmButtonText: "OK"
+                }).then(() =>{
+                    setTimeout(() => {
+                        window.location.href = response.redirect_url;
+                    }, 200);
                 });
             }, 500);
         },
@@ -134,6 +145,51 @@ $('.btn-add-parapharse').click(function(e) {
         },
         complete: function() {
         },
+
+    })
+
+})
+
+
+$('.btn-search').click(function(e) {
+    e.preventDefault(); // Ngăn form submit
+    $('.content').addClass("loading");
+    $(".form-control").removeClass("is-invalid"); // Xóa class lỗi
+    $(".invalid-feedback").text(""); // Xóa thông báo lỗi cũ
+    const keyword = $("#keyword").val();
+    const url = route_search + "?keyword=" + encodeURIComponent(keyword);
+    console.log(url);
+
+    data = {
+        keyword: keyword,
+    }
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        url: url,
+        type: "GET",
+        data: data,
+        success: function(response) {
+            
+            $('.content').append(response);
+            setTimeout(function() {
+                if(response.status == false){
+                        $(".content").removeClass("loading");
+                        Swal.fire("Lỗi!", response.message, "error")
+                }
+                else{
+                    $(".content").removeClass("loading");
+                }
+            }, 500);
+        
+        },
+        error: function(xhr) {
+            $(".content").removeClass("loading");
+            Swal.fire("Lỗi!", "khong tim thay", "error");
+          
+        },
+       
 
     })
 
@@ -219,14 +275,16 @@ $(document).ready(function() {
             '2': 'Adj',
             '3': 'V',
             '4': 'N',
-            '5': 'Cụm từ'
+            '5': 'Phrase',
+            '6': 'Parapharse'
         };
-        return types[type_id] || 'Cụm từ';
+        return types[type_id] || 'Phrase';
     };
-
+    
     var createVocabularyItem = function(index, value) {
         var color = getColor(value.type_id);
         var typeName = getTypeName(value.type_id);
+        
         var content = `
              <div class="col-xl-6 col-sm-6 vocabulary-item">
         <ul class="list-unstyled">

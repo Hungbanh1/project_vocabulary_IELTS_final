@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Type;
 use App\Vocabulary;
 use App\Parapharse;
+use Illuminate\Http\Request;
 
 class VocabularyRepositories
 {
@@ -18,20 +19,24 @@ class VocabularyRepositories
     // }
     public function getAllVocabularies()
     {
-        // return Vocabulary::all();
-        // $vocabulary = Vocabulary::orderBy('english', 'asc')->get();
-        // $type = Type::all();
-        return Vocabulary::orderBy('english', 'asc')->paginate(200);
-        // return view('index', compact('vocabulary', 'type'));
+        $perPage = 100; 
+        $totalRecords = Vocabulary::count(); // Lấy tổng số bản ghi
+        $vocabularies = Vocabulary::orderBy('english', 'asc')->paginate($perPage);
+        // $data = [$vocabularies,$totalRecords];
+        // return $data;
+        return $vocabularies;
+        // return Vocabulary::orderBy('english', 'asc')->paginate(200);
+
     }
     public function getAllParapharse()
     {
-      
+    
+                    $perPage = 100; 
       
                     $vocabularies = Vocabulary::with('parapharse')
                     ->where('is_parapharse', '!=', 0)
                     ->orderBy('english', 'asc')
-                    ->get();
+                    ->paginate($perPage);
                     return $vocabularies;
     }
     public function getType()
@@ -49,15 +54,17 @@ class VocabularyRepositories
     public function search($getKeyword)
     {
         $vocabulary = Vocabulary::where('english', 'LIKE', "$getKeyword%")
-            ->get();
+            ->paginate(100);    
         return $vocabulary;
     }
 
     public function filterByType($typeId)
     {
+        $perPage = 100; 
+
         $vocabulary = Vocabulary::where('type_id', $typeId)
             ->orderBy('english', 'asc')
-            ->get();
+            ->paginate($perPage);
         return $vocabulary;
     }
     public function editVocabulary($data)
