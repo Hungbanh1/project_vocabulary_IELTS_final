@@ -108,7 +108,13 @@ class VocabularyRepositories
     }
     public function createParapharse($data)
     {
-
+        
+        if (isset($data['vocabulary_id'])) {
+            $vocabulary = Vocabulary::find($data['vocabulary_id']);
+            if ($vocabulary && $vocabulary->is_parapharse != 1) {
+                $vocabulary->update(['is_parapharse' => 1]);
+            }
+        }
         return Parapharse::create($data);
     }
 

@@ -2,6 +2,8 @@
 @section('content')
     @include('modal.modal_parapharse')
     @include('modal.modal_edit')
+    @include('modal.modal_list_parapharse')
+
     @if (session('message'))
         <script>
             Swal.fire({
@@ -41,11 +43,12 @@
                             <input class="d-none" type="text" name="is_parapharse" id="is_parapharse">
 
                             <div class="d-flex list_action">
-                                {{-- <button style="border:none" data-toggle="modal" data-target="#myModalEdit"
-                                    data-eng="{{ $item->english }}" data-vn="{{ $item->vietnam }}"
-                                    data-type="{{ $item->type->id }}" data-id="{{ $item->id }}">
-                                    <img src="{{ asset('public/img/edit.png') }}" alt="edit vocabulary" class="action-icon">
-                                </button> --}}
+                                <button class="btn-show-list-parapharse" style="border:none; margin-left:5px"
+                                    data-toggle="modal" data-target="#ModalParapharseList" data-eng="{{ $item->english }}"
+                                    data-vn="{{ $item->vietnam }}" data-type="{{ $item->id }}"
+                                    data-id="{{ $item->id }}">
+                                    <i class="fa-solid fa-list"></i>
+                                </button>
                                 <button style="border:none" data-toggle="modal" data-target="#myModalEdit"
                                     data-eng="{{ $item->english }}" data-vn="{{ $item->vietnam }}"
                                     data-type="{{ $item->type_id }}" data-id="{{ $item->id }}"
@@ -59,6 +62,7 @@
                                     data-id="{{ $item->id }}">
                                     <i class="fa-solid fa-plus" style="color:#44ca44"></i>
                                 </button>
+
                                 <button class="delete-link btn-delete-parapharse" data-id="{{ $item->id }}">
                                     <img src="{{ asset('public/img/delete.png') }}" alt="" class="action-icon">
                                 </button>
@@ -72,20 +76,4 @@
         </div>
 
     </div>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var modal = "{{ old('modal') }}";
-
-            if (modal == "ModalParapharse") {
-                $(document).ready(function() {
-                    $("#ModalParapharse").modal('show');
-                });
-            } else if (modal == "myModalEdit") {
-                $(document).ready(function() {
-                    $("#myModalEdit").modal('show');
-                });
-            }
-
-        });
-    </script>
 @endsection

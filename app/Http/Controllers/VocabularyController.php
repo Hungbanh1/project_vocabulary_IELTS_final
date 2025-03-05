@@ -86,7 +86,7 @@ class VocabularyController extends Controller
             'vietnam.required' => 'Từ vựng là trường bắt buộc.',
             'type_vocabulary.required' => 'Vui lòng chọn loại từ.',
         ]);
-      
+        dd($request->all());
         $type = $request->type_vocabulary;
         if($type == 6){
             $data = [
@@ -132,7 +132,7 @@ class VocabularyController extends Controller
             'eng.unique' => 'Từ vựng này đã tồn tại',
             'vn.required' => 'Từ vựng là trường bắt buộc.',
         ]);
-        // $data_get = $request->all();
+        $data_get = $request->all();
         // return response()->json([
         //     'status' => 'success',
         //     'received_data' => $data_get
@@ -209,6 +209,7 @@ class VocabularyController extends Controller
             'vn_edit.required' => 'Từ vựng là trường bắt buộc.',
             'type.required' => 'Vui lòng chọn loại từ.',
         ]);
+
   
         $data = [
             'id' => $request->input('id'),
@@ -225,6 +226,51 @@ class VocabularyController extends Controller
         }
         return redirect('/')->with('message', 'Cập nhật thành công');
 
+    }
+    function edit_list_parapharse(Request $request)
+    {
+            // $request->validate([
+            //     // 'parapharse.*.id' => 'required|integer|exists:parapharse,id',
+            //     Rule::unique('vocabularies', 'english')->ignore($request->input('parapharse.*.id'), 'id'),
+            //     Rule::unique('parapharse', 'english')->ignore($request->input('parapharse.*.id'), 'id'),
+            //     'parapharse.*.vn' => 'required|string|max:255',
+            // ], [
+            //         'parapharse.*.eng.required' => 'Từ vựng eng* là trường bắt buộc',
+            //         'parapharse.*.eng.unique' => 'Từ vựng eng* này đã tồn tại',
+            //         'parapharse.*.vn.required' => 'Từ vựng vn.* là trường bắt buộc.',
+            // ]);
+            $rules = [];
+
+            foreach ($request->input('parapharse', []) as $key => $para) {
+                $rules["parapharse.$key.eng"] = [
+                    'required',
+                    'string',
+                    'max:255',
+                    Rule::unique('vocabularies', 'english')->ignore($para['id'] ?? null, 'id'),
+                    Rule::unique('parapharse', 'english')->ignore($para['id'] ?? null, 'id'),
+                ];
+                $rules["parapharse.$key.vn"] = 'required|string|max:255';
+            }
+
+            $validatedData = $request->validate($rules);
+            
+                foreach ($request->input('parapharse') as $parapharse) {
+                    Parapharse::where('id', $parapharse['id'])->update([
+                        'english' => $parapharse['eng'],
+                        'vietnam' => $parapharse['vn'],
+                    ]);
+                }
+                return response()->json([
+                    'message' => 'Dữ liệu hợp lệ',
+                    'data' => $request->all(),
+                    'parapharse' => $request->all()['parapharse'], 
+                    'redirect_url' => url('/parapharse'),// Trả về URL redirect
+                    'eng' => $parapharse['eng'],
+                    // 'eng' => $parapharse['eng']
+            
+                ]);
+         
+        
     }
     public function delete($id){
         $vocabulary = Vocabulary::find($id);
