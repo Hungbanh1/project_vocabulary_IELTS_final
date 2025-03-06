@@ -195,7 +195,7 @@
         <div id="config" class="d-none" data-default-url="{{ $defaultUrl }}"
             data-route-add="{{ route('add') }}" data-route-add-parapharse="{{ route('add_parapharse') }}"
             data-is-parapharse={{ $is_parapharse }} data-last-url = "{{ $lastUrl }}"
-            data-full-url="{{ $fullUrl }}">
+            data-full-url="{{ $fullUrl }}" data-route-edit-list-parapharse={{ route('edit_list_parapharse') }}>
         </div>
     </div>
 </body>

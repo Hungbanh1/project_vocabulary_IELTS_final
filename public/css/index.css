@@ -52,7 +52,9 @@ ul.no-marker {
     border-color: #ee0033;
     white-space: pre;
 }
-
+.bg-none {
+    background: none;
+}
 .btn-add:hover {
     background-color: rgba(181, 180, 180, 0.5) !important;
 }
@@ -90,9 +92,14 @@ ul.no-marker {
     z-index: 1001;
 }
 .btn-delete-vocabulary,
-.btn-delete-parapharse {
+.btn-delete-parapharse,
+.btn-delete-child-parapharse {
     border: none;
     margin-left: 5px;
+}
+h5.badge {
+    padding: 5px !important;
+    font-size: 14px !important;
 }
 @keyframes spin {
     from {

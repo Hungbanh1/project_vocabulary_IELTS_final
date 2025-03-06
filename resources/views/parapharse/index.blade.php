@@ -77,3 +77,24 @@
 
     </div>
 @endsection
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var modal = "{{ old('modal') }}";
+        // console.log(modal);
+
+        if (modal == "ModalParapharse") {
+            $(document).ready(function() {
+                $("#ModalParapharse").modal('show');
+            });
+        } else if (modal == "myModalEdit") {
+            $(document).ready(function() {
+                $("#myModalEdit").modal('show');
+            });
+        } else if (modal == "ModalParapharseList") {
+            $(document).ready(function() {
+                $("#ModalParapharseList").modal('show');
+            });
+        }
+
+    });
+</script>

@@ -94,6 +94,7 @@ class VocabularyRepositories
                 'english' => $data['english'],
                 'vietnam' => $data['vietnam'],
                 'type_id' => $data['type_id'],
+                'is_parapharse' => $data['is_parapharse'],
             ]);
     }
     public function findVocabularyById($id)

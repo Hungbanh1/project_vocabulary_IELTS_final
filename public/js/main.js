@@ -1,4 +1,5 @@
 var config = document.getElementById("config");
+
 var route_search = document.getElementsByClassName("route_search");
 
 var defaultUrl = config.dataset.defaultUrl;
@@ -6,6 +7,9 @@ var lastUrl = config.dataset.lastUrl;
 var fullUrl = config.dataset.fullUrl;
 var route_add = config.dataset.routeAdd;
 var route_add_parapharse = config.dataset.routeAddParapharse;
+var route_edit_list_parapharse = config.dataset.routeEditListParapharse;
+
+
 var is_parapharse = config.dataset.isParapharse;
 var route_search = route_search[0].dataset.routeSearch;
 let isLastPage = false; 
@@ -209,19 +213,20 @@ $('.btn-search').click(function(e) {
 })
 
 //delete vocabulary
-$(document).on('click', '.btn-delete-vocabulary, .btn-delete-parapharse', function() {
+$(document).on('click', '.btn-delete-vocabulary, .btn-delete-parapharse, .btn-delete-child-parapharse', function() {
     let vocabularyId = $(this).data('id');
+    // console.log(vocabularyId);
+    let is_child = $(this).data('is-child') || 0;
+    
     var url_voca =  defaultUrl + "/delete/" + vocabularyId ;
     var url_para =  defaultUrl + "/parapharse/delete/" + vocabularyId ;
-    var url  = is_parapharse == "parapharse"
+    var url_child =  defaultUrl + "/parapharse/delete/child/" + vocabularyId ;
+    var url_check  = is_parapharse == "parapharse"
         ? url_para
         : url_voca;
-        console.log(url_voca);
-        console.log(url_para);
+
+    var url = is_child == 1 ? url_child : url_check;
         
-    console.log(vocabularyId);
-    console.log(defaultUrl);
-    
     Swal.fire({
         title: "Xác nhận xóa?",
         text: "Bạn có chắc chắn muốn xóa từ vựng này không?",
@@ -252,6 +257,7 @@ $(document).on('click', '.btn-delete-vocabulary, .btn-delete-parapharse', functi
                     }).then(() => {
                         setTimeout(() => {
                             window.location.href = response.redirect_url;
+                            
                         }, 200);
                     });
                 },
@@ -264,7 +270,48 @@ $(document).on('click', '.btn-delete-vocabulary, .btn-delete-parapharse', functi
         }
     });
 });
-
+function loadParapharseList() {
+    let id = $(this).data('id');
+    var url = defaultUrl + "/api/get-list-parapharse/" + id;
+    data = {
+        'id' : id,
+    }
+    $.ajax({
+        url: url, // API lấy danh sách mới
+        data: data,
+        type: "GET",
+        success: function(data) {
+            data.forEach(function(item, index) {
+                t++;
+                $('#parapharseList').append(`
+                    <div class="col-sm-12 col-xl-12 text-danger">
+                        <h5 class="badge badge-info">Paraphase ${t}</h5>
+                          <button class="delete-link btn-delete-child-parapharse bg-none" data-is-child= 1 data-id="${item.id}">
+                            <img src="${defaultUrl+"/public/img/delete.png"}" alt="" class="action-icon">
+                        </button>
+                    </div>
+                    
+                    <input class="id_list_para" id="${item.id}" type="hidden" name="parapharse[${index}][id]" value="${item.id}">
+                    <div class="form-group col-sm-6 col-xl-6">
+                        <label for="eng_${index}">Tiếng Anh <strong class="text-danger">*</strong></label>
+                        <input type="text" class="form-control" name="parapharse[${index}][eng]"
+                            value="${item.english}" id="eng_${index}" placeholder="Nhập từ tiếng Anh" data-id="${item.id}">
+                        <span class="invalid-feedback" data-name="parapharse[${index}][eng]-error"></span>
+                    </div>
+                    <div class="form-group col-sm-6 col-xl-6">
+                        <label for="vn_${index}">Tiếng Việt <strong class="text-danger">*</strong></label>
+                        <input type="text" class="form-control" name="parapharse[${index}][vn]"
+                            value="${item.vietnam}" id="vn_${index}" placeholder="Nhập từ tiếng Việt" data-id="${item.id}">
+                    <span class="invalid-feedback" data-name="parapharse[${index}][vn]-error"></span>
+                    </div>
+                `);
+            });
+        },
+        error: function() {
+            console.log("Lỗi khi load danh sách paraphrase.");
+        }
+    });
+}
 //search vocabulary
 $(document).ready(function() {
     var timeout = null;
@@ -336,7 +383,6 @@ $(document).ready(function() {
     $('.keyword').keyup(function() {
         clearTimeout(timeout);
         const keyword = $('.keyword').val();
-        
             if (keyword !== lastKeyword) {
                 lastKeyword = keyword;
                 canLoadMore = true; // Reset loadMore
@@ -357,10 +403,7 @@ $(document).ready(function() {
                 data: data,
                 url: url,
                 success: function(data) {
-                    console.log(data);
-
-
-                    
+                    // console.log(data);
                     $('#main_content').empty();
     
                     var count = data.data.total;
@@ -452,41 +495,54 @@ $(document).on('click', '.btn-show-list-parapharse', function() {
     $.ajax({
         url: url, 
         data: data,
-        method: 'GET',
+        type: 'GET',
         success: function(data) {
-            // console.log(data);
-            console.log('success');
-            
             $('#parapharseList').empty();
-            data.forEach(function(item, index) {
-            t++;
-            $('#parapharseList').append(`
-                <div class="col-sm-12 col-xl-12 text-danger">
-                    <h5 class="badge badge-info">Paraphase ${t}</h5>
-                </div>
-                <input class="id_list_para" id="${item.id}" type="hidden" name="parapharse[${index}][id]" value="${item.id}">
-                <div class="form-group col-sm-6 col-xl-6">
-                    <label for="eng_${index}">Tiếng Anh <strong class="text-danger">*</strong></label>
-                    <input type="text" class="form-control" name="parapharse[${index}][eng]"
-                        value="${item.english}" id="eng_${index}" placeholder="Nhập từ tiếng Anh" data-id="${item.id}">
-                    <span class="invalid-feedback" data-name="parapharse[${index}][eng]-error"></span>
-                </div>
-                <div class="form-group col-sm-6 col-xl-6">
-                    <label for="vn_${index}">Tiếng Việt <strong class="text-danger">*</strong></label>
-                    <input type="text" class="form-control" name="parapharse[${index}][vn]"
-                        value="${item.vietnam}" id="vn_${index}" placeholder="Nhập từ tiếng Việt" data-id="${item.id}">
-                <span class="invalid-feedback" data-name="parapharse[${index}][vn]-error"></span>
-                </div>
-            `);
-        });
-
+            $(".content").addClass("loading");
+                
+           if(data.length > 0){
+                setTimeout(function() {
+                    $(".content").removeClass("loading");
+                    data.forEach(function(item, index) {
+                    t++;
+                    $('#parapharseList').append(`
+                        <div class="col-sm-12 col-xl-12 text-danger">
+                            <h5 class="badge badge-info">Paraphase ${t}</h5>
+                              <button class="delete-link btn-delete-child-parapharse bg-none" data-is-child= 1 data-id="${item.id}">
+                                <img src="${defaultUrl+"/public/img/delete.png"}" alt="" class="action-icon">
+                            </button>
+                        </div>
+                        
+                        <input class="id_list_para" id="${item.id}" type="hidden" name="parapharse[${index}][id]" value="${item.id}">
+                        <div class="form-group col-sm-6 col-xl-6">
+                            <label for="eng_${index}">Tiếng Anh <strong class="text-danger">*</strong></label>
+                            <input type="text" class="form-control" name="parapharse[${index}][eng]"
+                                value="${item.english}" id="eng_${index}" placeholder="Nhập từ tiếng Anh" data-id="${item.id}">
+                            <span class="invalid-feedback" data-name="parapharse[${index}][eng]-error"></span>
+                        </div>
+                        <div class="form-group col-sm-6 col-xl-6">
+                            <label for="vn_${index}">Tiếng Việt <strong class="text-danger">*</strong></label>
+                            <input type="text" class="form-control" name="parapharse[${index}][vn]"
+                                value="${item.vietnam}" id="vn_${index}" placeholder="Nhập từ tiếng Việt" data-id="${item.id}">
+                        <span class="invalid-feedback" data-name="parapharse[${index}][vn]-error"></span>
+                        </div>
+                    `);
+                });
+                },1000)
+           }else{
+               setTimeout(function(){
+                $(".content").removeClass("loading");
+                
+                $('#parapharseList').append(`<p class="text-danger col-sm-12 col-xl-12">Không có dữ liệu</p>`)
+            },1000)
+           }
         },
         error: function(xhr) {
-            console.log('error');
+            // console.log('error');
 
             if (xhr.status === 422) { // Lỗi validation
                 let errors = xhr.responseJSON.errors;
-                console.log(errors);
+                // console.log(errors);
                 
                 // Reset lỗi cũ
                 $('.is-invalid').removeClass('is-invalid');
@@ -520,7 +576,7 @@ $('.btn-edit-list-parapharse').click(function(e) {
     let inputsEng = document.querySelectorAll('input[name^="parapharse"][name$="[eng]"]');
     let inputsVn = document.querySelectorAll('input[name^="parapharse"][name$="[vn]"]');
     let id_parapharse =  $("#id_parapharse").val(); // Lấy ID từ data-id hoặc input ẩn
-    console.log(id_parapharse);
+    // console.log(id_parapharse);
     
     inputsEng.forEach((input, index) => {
         parapharse.push({
@@ -533,37 +589,50 @@ $('.btn-edit-list-parapharse').click(function(e) {
         id_parapharse:id_parapharse,
         parapharse: parapharse,
     }
-    console.log("dữ liệu gửi", data);
+    // console.log("dữ liệu gửi", data);
     $.ajax({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
-        url: "http://localhost:8080/project_vocabulary_IELTS/edit_list_parapharse",
+        url: route_edit_list_parapharse,
         type: "POST",
         data: data,
         success: function(response) {
-            console.log("dữ liệu nhận", response);
-            $('.content').append(response);
-            setTimeout(function() {
+            // console.log("dữ liệu nhận", response);
+            if (response.not_update) {
                 $(".content").removeClass("loading");
                 Swal.fire({
-                    title: "Thành công!",
-                    text: "Cập nhật thành công",
-                    icon: "success",
+                    title: "Thông báo!",
+                    text: response.message,
+                    icon: "info",
                     confirmButtonText: "OK"
-                }).then(() =>{
-                    setTimeout(() => {
-                        window.location.href = response.redirect_url;
-                    }, 200);
                 });
-            }, 500);
+                return; 
+            }else{
+                if(response.parapharse){
+                    $('.content').append(response);
+                    setTimeout(function() {
+                        $(".content").removeClass("loading");
+                        Swal.fire({
+                            title: "Thành công!",
+                            text: "Cập nhật thành công",
+                            icon: "success",
+                            confirmButtonText: "OK"
+                        }).then(() =>{
+                            setTimeout(() => {
+                                window.location.href = response.redirect_url;
+                            }, 200);
+                        });
+                    }, 500);
+                }
+            }        
         },
         error: function(xhr) {
             setTimeout(function() {
                 $(".content").removeClass("loading");
                 if (xhr.status === 422) {
                     let errors = xhr.responseJSON.errors;
-                    console.log(errors);
+                    // console.log(errors);
                     // Duyệt qua từng lỗi và hiển thị dưới input
                     Object.keys(errors).forEach(function(key) {
                         let formattedKey = key.replace(/\.(\d+)\./g, '[$1]['); // Đổi 'parapharse.0.eng' → 'parapharse[0][eng]'
@@ -573,7 +642,7 @@ $('.btn-edit-list-parapharse').click(function(e) {
                         let selector = "[name='" + formattedKey + "']";
                         $(selector).addClass("is-invalid"); 
                         $("[data-name='" + formattedKey + "-error']").text(errors[key][0]);
-                        console.log("[data-name='" + formattedKey + "-error']");
+                        // console.log("[data-name='" + formattedKey + "-error']");
                         
                     
                     });
@@ -587,18 +656,18 @@ $('.btn-edit-list-parapharse').click(function(e) {
     })
 
 })
-document.addEventListener("DOMContentLoaded", function() {
-    var modal = "{{ old('modal') }}";
-    console.log(modal);
+// document.addEventListener("DOMContentLoaded", function() {
+//     var modal = "{{ old('modal') }}";
+//     // console.log(modal);
 
-    if (modal == "ModalParapharse") {
-        $(document).ready(function() {
-            $("#ModalParapharse").modal('show');
-        });
-    } else if (modal == "myModalEdit") {
-        $(document).ready(function() {
-            $("#myModalEdit").modal('show');
-        });
-    }
+//     if (modal == "ModalParapharse") {
+//         $(document).ready(function() {
+//             $("#ModalParapharse").modal('show');
+//         });
+//     } else if (modal == "myModalEdit") {
+//         $(document).ready(function() {
+//             $("#myModalEdit").modal('show');
+//         });
+//     }
 
-});
+// });

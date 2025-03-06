@@ -27,6 +27,7 @@ Route::post('/add_parapharse', "VocabularyController@add_parapharse")->name('add
 // Route::get('/delete', "VocabularyController@delete")->name('delete');
 Route::get('/delete/{id}', 'VocabularyController@delete')->name('delete');
 Route::get('/parapharse/delete/{id}', 'VocabularyController@delete_parapharse')->name('delete_parapharse');
+Route::get('/parapharse/delete/child/{id}', 'VocabularyController@delete_child_parapharse')->name('delete_child_parapharse');
 Route::get('/search', "VocabularyController@search")->name('search');
 Route::get('/search/searchajax', "VocabularyController@searchajax")->name('searchajax');
 Route::get('/adv', "VocabularyController@adv")->name('adv');
