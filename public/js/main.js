@@ -270,47 +270,11 @@ $(document).on('click', '.btn-delete-vocabulary, .btn-delete-parapharse, .btn-de
         }
     });
 });
-function loadParapharseList() {
-    let id = $(this).data('id');
-    var url = defaultUrl + "/api/get-list-parapharse/" + id;
-    data = {
-        'id' : id,
-    }
-    $.ajax({
-        url: url, // API lấy danh sách mới
-        data: data,
-        type: "GET",
-        success: function(data) {
-            data.forEach(function(item, index) {
-                t++;
-                $('#parapharseList').append(`
-                    <div class="col-sm-12 col-xl-12 text-danger">
-                        <h5 class="badge badge-info">Paraphase ${t}</h5>
-                          <button class="delete-link btn-delete-child-parapharse bg-none" data-is-child= 1 data-id="${item.id}">
-                            <img src="${defaultUrl+"/public/img/delete.png"}" alt="" class="action-icon">
-                        </button>
-                    </div>
-                    
-                    <input class="id_list_para" id="${item.id}" type="hidden" name="parapharse[${index}][id]" value="${item.id}">
-                    <div class="form-group col-sm-6 col-xl-6">
-                        <label for="eng_${index}">Tiếng Anh <strong class="text-danger">*</strong></label>
-                        <input type="text" class="form-control" name="parapharse[${index}][eng]"
-                            value="${item.english}" id="eng_${index}" placeholder="Nhập từ tiếng Anh" data-id="${item.id}">
-                        <span class="invalid-feedback" data-name="parapharse[${index}][eng]-error"></span>
-                    </div>
-                    <div class="form-group col-sm-6 col-xl-6">
-                        <label for="vn_${index}">Tiếng Việt <strong class="text-danger">*</strong></label>
-                        <input type="text" class="form-control" name="parapharse[${index}][vn]"
-                            value="${item.vietnam}" id="vn_${index}" placeholder="Nhập từ tiếng Việt" data-id="${item.id}">
-                    <span class="invalid-feedback" data-name="parapharse[${index}][vn]-error"></span>
-                    </div>
-                `);
-            });
-        },
-        error: function() {
-            console.log("Lỗi khi load danh sách paraphrase.");
-        }
-    });
+function getParapharses(id) {
+    return fetch(defaultUrl + `/api/get-list-parapharse/${id}`)
+        .then(response => response.json())
+        .then(data => data)
+        .catch(error => console.error("Error fetching parapharses:", error));
 }
 //search vocabulary
 $(document).ready(function() {
@@ -349,142 +313,223 @@ $(document).ready(function() {
              <div class="col-xl-6 col-sm-6 vocabulary-item">
         <ul class="list-unstyled">
            <li class="d-flex align-items-center mb-2">
-<p class="mr-2">${index + 1}/</p>
-<p class="vocabulary-vn mr-2" style="color: ${color};">${value.english}</p>
-<p style="color: ${color};">(${typeName})</p>
-<p class="mx-3">:</p>
-<p class="vocabulary-en" style="color: #6c757d;">${value.vietnam}</p>
+            <p class="mr-2">${index + 1}/</p>
+            <p class="vocabulary-vn mr-2" style="color: ${color};">${value.english}</p>
+            <p style="color: ${color};">(${typeName})</p>
+            <p class="mx-3">:</p>
+            <p class="vocabulary-en" style="color: #6c757d;">${value.vietnam}</p>
 
-</li>
-<li>
-<div class="d-flex list_action">
-    <button style="border:none" data-toggle="modal" data-target="#myModalEdit"
-        data-eng="${value.english}" data-vn="${value.vietnam}"
-        data-type="${value.type_id}" data-id="${value.id}">
-        <img src="${assetUrl}/public/img/edit.png" alt="edit vocabulary"
-            class="action-icon">
-    </button>
-    <button class="delete-link btn-delete-vocabulary" data-id="${value.id}">
-        <img src="${assetUrl}/public/img/delete.png" alt="" class="action-icon">
-    </button>
-    <button style="border:none; margin-left:5px" data-toggle="modal"
-        data-target="#ModalParapharse" data-eng="${value.english}"
-        data-vn="${value.vietnam}" data-type="${value.type_id}"
-        data-id="${value.id}">
-        <i class="fa-solid fa-plus" style="color:#44ca44"></i>
-    </button>
-</div>
-</li>
-        </ul>
-    </div>
-`;
+            </li>
+            <li>
+            <div class="d-flex list_action">
+                <button style="border:none" data-toggle="modal" data-target="#myModalEdit"
+                    data-eng="${value.english}" data-vn="${value.vietnam}"
+                    data-type="${value.type_id}" data-id="${value.id}">
+                    <img src="${assetUrl}/public/img/edit.png" alt="edit vocabulary"
+                        class="action-icon">
+                </button>
+                <button class="delete-link btn-delete-vocabulary" data-id="${value.id}">
+                    <img src="${assetUrl}/public/img/delete.png" alt="" class="action-icon">
+                </button>
+                <button style="border:none; margin-left:5px" data-toggle="modal"
+                    data-target="#ModalParapharse" data-eng="${value.english}"
+                    data-vn="${value.vietnam}" data-type="${value.type_id}"
+                    data-id="${value.id}">
+                    <i class="fa-solid fa-plus" style="color:#44ca44"></i>
+                </button>
+            </div>
+            </li>
+                    </ul>
+                </div>
+            `;
+       
         return content;
     };
-    $('.keyword').keyup(function() {
-        clearTimeout(timeout);
-        const keyword = $('.keyword').val();
-            if (keyword !== lastKeyword) {
-                lastKeyword = keyword;
-                canLoadMore = true; // Reset loadMore
-                page = 1; 
-                isSearching = keyword !== "";
-                $("#main_content").empty();
-            }
-        timeout = setTimeout(function() {
-            var data = {
-                keyword: keyword,
-                lastUrl: lastUrl,
-            };
-            // console.log(data);
+ 
+    // var createVocabularyItem1 = async function(index, value) {
+    var createVocabularyItem1 = async function(index, value) {
+ 
+        var color = getColor(value.type_id);
+        var typeName = getTypeName(value.type_id);
+        var parapharses = await getParapharses(value.id);
+        // console.log(parapharses);
+        var parapharseList = parapharses.map(item => `= ${item.english}`).join("\n");
+        
+        var content = `
+             <div class="col-xl-6 col-sm-6 vocabulary-item">
+        <ul class="list-unstyled">
+           <li class="d-flex align-items-center mb-2">
+            <p class="mr-2">${index + 1}/</p>
+            <p class="vocabulary-vn mr-2" style="color: #28a745;">${value.english}</p>
+            <p class="vocabulary-vn mr-2" style="color: #28a745;">${parapharseList}</p>
+            <p class="vocabulary-en" style="color: #6c757d;">= ${value.vietnam}</p>
 
-            $.ajax({
-                type: 'get',
-                dataType: 'json',
-                data: data,
-                url: url,
-                success: function(data) {
-                    // console.log(data);
-                    $('#main_content').empty();
-    
-                    var count = data.data.total;
-                    totalRecords = count;
-                    console.log(totalRecords);
-                    
-                    if (count >= 0) {
-                        $('.total_vocabulary').html(`
-                            <p>Hiện tại có: <span class="text-danger">${count}</span> từ vựng</p>
-                        `);
-                    } 
-                     if (totalRecords < 10) {
-                        canLoadMore = false;
-                    }
-                    if (totalRecords > 0) {
-                        // var content = data.data.vocabulary.data.map(function(value,
-                        var content = data.data.data.map(function(value,
-                            index) {
-                            return createVocabularyItem(index, value);
-                        }).join('');
-                        $('#main_content').html(content);
-                    } else {
-                        $('#main_content').html(`
-                <div class="col-12">
-                    <div class="alert alert-warning" role="alert">
-                        Không có từ vựng
-                    </div>
+            </li>
+            <li>
+            <div class="d-flex list_action pd-5">
+              <button class="btn-show-list-parapharse" style="border:none; margin-left:5px" data-toggle="modal"
+                    data-target="#ModalParapharseList" data-eng="${value.english}" data-vn="${value.vietnam}"
+                    data-type="${value.type_id}" data-id="${value.id}">
+                    <i class="fa-solid fa-list"></i>
+                </button>
+                <button style="border:none" data-toggle="modal" data-target="#myModalEdit"
+                    data-eng="${value.english}" data-vn="${value.vietnam}"
+                    data-type="${value.type_id}" data-id="${value.id}">
+                    <img src="${assetUrl}/public/img/edit.png" alt="edit vocabulary"
+                        class="action-icon">
+                </button>
+                <button class="delete-link btn-delete-vocabulary" data-id="${value.id}">
+                    <img src="${assetUrl}/public/img/delete.png" alt="" class="action-icon">
+                </button>
+                <button style="border:none; margin-left:5px" data-toggle="modal"
+                    data-target="#ModalParapharse" data-eng="${value.english}"
+                    data-vn="${value.vietnam}" data-type="${value.type_id}"
+                    data-id="${value.id}">
+                    <i class="fa-solid fa-plus" style="color:#44ca44"></i>
+                </button>
+            </div>
+            </li>
+                    </ul>
                 </div>
-            `);
-            // canLoadMore = false;
-                    }
-                },
-                error: function(xhr, ajaxOptions, thrownError) {
-                    console.error('Lỗi AJAX:', xhr.status, thrownError);
-                },
-            });
-        }, 200);
+            `;
+       
+        return content;
+    };
+    $('.keyword').keyup(function(event) {
+        clearTimeout(timeout);
+        const keyword = $('.keyword').val().trim();
+        // console.log(keyword.length);
+        
+        // Kiểm tra nếu bấm Backspace và input bị xóa hết thì không gọi API
+        // if (event.which === 8) {
+        //     return;
+        // }
+    
+        if (keyword !== lastKeyword) {
+            lastKeyword = keyword;
+            canLoadMore = true; // Reset loadMore
+            page = 1; 
+            isSearching = keyword !== "";
+            $("#main_content").empty();
+        }
+        data = {
+            'keyword': keyword,
+        }
+        if(keyword.length > 0 || keyword.length == 0){
+            timeout = setTimeout(function() {
+                var data = {
+                    keyword: keyword,
+                    lastUrl: lastUrl,
+                }; 
+                    $.ajax({
+                        type: 'get',
+                        dataType: 'json',
+                        data: data,
+                        url: url,
+                        success: function(data) {
+                            // console.log("data",data);
+                            $('#main_content').empty();
+                            // console.log(data);
+                            console.log(lastUrl);
+                            
+                            // var count = data.data.length;
+                            var count = data.vocabulary.total;
+                            totalRecords = count;
+                            
+                            console.log(totalRecords);
+                            console.log(lastUrl);
+                            
+                            if (count >= 0) {
+                                $('.total_vocabulary').html(`
+                                    <p>Hiện tại có: <span class="text-danger">${count}</span> từ vựng</p>
+                                `);
+                            } 
+                            //  if (totalRecords < 10) {
+                            //     canLoadMore = false;
+                            // }
+                            if (totalRecords > 0) {
+                                if(lastUrl == "parapharse"){
+                                    Promise.all(data.vocabulary.data.map(async function(value, index) {
+                                        return await createVocabularyItem1(index, value);
+                                    })).then(function(contents) {
+                                        $('#main_content').html(contents.join(''));
+                                    });
+                                }
+                                else{
+                                    var content = data.vocabulary.data.map(function(value,
+                                        index) {
+                                        return createVocabularyItem(index, value);
+                                    }).join('');
+                                    $('#main_content').html(content);
+                                }
+                               
+                            } 
+                            
+                            else {
+                                $('#main_content').html(`
+                        <div class="col-12">
+                            <div class="alert alert-warning" role="alert">
+                                Không có từ vựng
+                            </div>
+                        </div>
+                    `);
+                            }
+                        },
+                        error: function(xhr, ajaxOptions, thrownError) {
+                            console.error('Lỗi AJAX:', xhr.status, thrownError);
+                        },
+                    });
+                }, 200);
+        }
+       
     });
 });
 $(window).scroll(function() {
-    if (isLoading || isLastPage) return; 
-    if ( $(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
-        page++; // Tăng page lên
-        infinteLoadMore(page);
+    if (isLoading || isLastPage) return;
 
-        function infinteLoadMore(page) {
-            $('.content').addClass("loading");
-            $.ajax({
-                // url: "?page=" + page,
-                url: fullUrl + "?page=" + page,
-                // dataType: 'html',
-                data: {
-                    keyword: isSearching ? lastKeyword : "", // Chỉ lấy từ khóa đang tìm
-                    // page: page,
-                },
-                type: "GET",
-                success: function(data) {
-                    // console.log(fullUrl + "?page=" + page);
-                    
-                    // console.log(data);
-                    // console.log("success");
-                    if (!data.html.trim()) { // Nếu không có dữ liệu trả về
-                        isLastPage = true; // Đánh dấu đã load hết dữ liệu
-                        return;
-                    }
-                    
-                    setTimeout(function() {
-                        $(".content").removeClass("loading");
-                        // $("#main_content").append(data.html);
-                        $("#main_content").append(data.html);
-                    }, 1000);
-                },
-            });
-        }
+    if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
+        isLoading = true; // Đánh dấu là đang tải dữ liệu
+        page++; 
+        infiniteLoadMore(page);
     }
 });
 
-       
+function infiniteLoadMore(page) {
+    $('.content').addClass("loading");
+    console.log("32131");
+    
+    $.ajax({
+        url: fullUrl + "?page=" + page,
+        data: {
+            keyword: isSearching ? lastKeyword : "",
+        },
+        type: "GET",
+        success: function(data) {
+            console.log(data.html);
+            
+            if (!data.html.trim()) {
+                $(".content").removeClass("loading");
+                isLastPage = true; 
+                return;
+            }
+            setTimeout(function() {
+                $(".content").removeClass("loading");
+                $("#main_content").append(data.html);
+                isLoading = false; // Đánh dấu đã load xong
+            }, 1000);
+        },
+        error: function() {
+            isLoading = false; // Nếu có lỗi cũng phải reset trạng thái
+        }
+    });
+}
+
+    
 $(document).on('click', '.btn-show-list-parapharse', function() {
     let id = $(this).data('id');
     var url = defaultUrl + "/api/get-list-parapharse/" + id;
+    console.log(url);
+    
     var t = 0;
     $(".form-control").removeClass("is-invalid"); // Xóa class lỗi
     $(".invalid-feedback").remove(); // Xóa thông báo lỗi cũ
@@ -498,10 +543,10 @@ $(document).on('click', '.btn-show-list-parapharse', function() {
         type: 'GET',
         success: function(data) {
             $('#parapharseList').empty();
+
             $(".content").addClass("loading");
                 
            if(data.length > 0){
-                setTimeout(function() {
                     $(".content").removeClass("loading");
                     data.forEach(function(item, index) {
                     t++;
@@ -528,17 +573,12 @@ $(document).on('click', '.btn-show-list-parapharse', function() {
                         </div>
                     `);
                 });
-                },1000)
            }else{
-               setTimeout(function(){
                 $(".content").removeClass("loading");
-                
                 $('#parapharseList').append(`<p class="text-danger col-sm-12 col-xl-12">Không có dữ liệu</p>`)
-            },1000)
            }
         },
         error: function(xhr) {
-            // console.log('error');
 
             if (xhr.status === 422) { // Lỗi validation
                 let errors = xhr.responseJSON.errors;
@@ -656,18 +696,3 @@ $('.btn-edit-list-parapharse').click(function(e) {
     })
 
 })
-// document.addEventListener("DOMContentLoaded", function() {
-//     var modal = "{{ old('modal') }}";
-//     // console.log(modal);
-
-//     if (modal == "ModalParapharse") {
-//         $(document).ready(function() {
-//             $("#ModalParapharse").modal('show');
-//         });
-//     } else if (modal == "myModalEdit") {
-//         $(document).ready(function() {
-//             $("#myModalEdit").modal('show');
-//         });
-//     }
-
-// });

@@ -34,6 +34,7 @@
                             <p class="mr-2">{{ $t }}/</p>
                             <p class="vocabulary-vn mr-2" style="color: #28a745;"> {{ $item->english }}</p>
                             {{-- <p class="mx-3">:</p> --}}
+                            {{-- {{ dd($item->parapharse) }} --}}
                             @foreach ($item->parapharse as $index => $parapharses)
                                 <p class="vocabulary-vn mr-2" style="color: #28a745;">= {{ $parapharses->english }}</p>
                             @endforeach
@@ -42,7 +43,7 @@
                         <li>
                             <input class="d-none" type="text" name="is_parapharse" id="is_parapharse">
 
-                            <div class="d-flex list_action">
+                            <div class="d-flex list_action pd-5">
                                 <button class="btn-show-list-parapharse" style="border:none; margin-left:5px"
                                     data-toggle="modal" data-target="#ModalParapharseList" data-eng="{{ $item->english }}"
                                     data-vn="{{ $item->vietnam }}" data-type="{{ $item->id }}"

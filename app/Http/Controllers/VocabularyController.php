@@ -25,8 +25,7 @@ class VocabularyController extends Controller
     {
         $type = $this->VocabularyServices->getType();
         $vocabulary = $this->VocabularyServices->getAllVocabularies();
-  
-        // dd($vocabulary1);
+        // if ($request->ajax() && !empty($request->keyword)) {
         if ($request->ajax()) {
             Log::info('Request AJAX vào index controller');
             $getKeyword = $request->keyword;
@@ -37,7 +36,7 @@ class VocabularyController extends Controller
                 [
                 'html' => $view,
                 'keyword' => $getKeyword,
-                'vocabulary' => $vocabulary
+                'vocabulary' => $vocabulary,
                 ]
             );
         }
@@ -71,8 +70,15 @@ class VocabularyController extends Controller
 
         $type = $this->VocabularyServices->getType();
         $vocabulary = $this->VocabularyServices->getAllParapharse();
-        // dd($vocabulary);
+        // Log::info('Request AJAX vào index controller Parapharse');
+        if (request()->ajax()) {
+            return response()->json([
+                'vocabulary' => $vocabulary,
+                'type' => $type
+            ]);
+        }
         return view('parapharse.index', compact('vocabulary', 'type'));
+        // return response()->json(['vocabulary' => $vocabulary]);
     }
     function add(Request $request)
     {
@@ -119,6 +125,26 @@ class VocabularyController extends Controller
             ]);
         }
        
+    }
+    public function importToVoca(Request $request)
+    {
+
+        // return response()->json([
+        //     'ok' => "ok",
+        // ]);
+        // $value = [
+        //     'english' => $request->english,
+        //     'vietnam' => $request->vietnam,
+        //     'type_id' => $request->type_id,
+        //     'id' => $request->id
+        // ];
+
+        // $color = getColor($value['type_id']);
+        // $typeName = getTypeName($value['type_id']);
+        // $index = $request->index;
+        return view('search.importToVoca');
+
+        // return view('search.importToVoca', compact('value', 'color', 'typeName', 'index'))->render();
     }
     
     function add_parapharse(Request $request)
@@ -177,23 +203,31 @@ class VocabularyController extends Controller
     public function searchajax(Request $request, $suffitx = 'VNĐ')
     {
 
-        // $getKeyword = '';
-        // // return "keyword ajax:$keyword";
 
-        // if ($request->keyword) {
-        //     $getKeyword = $request->keyword;
-        // }
-
-            $data_get = $request->all();
-      
-
-        $getKeyword = $request->keyword;
+        $getKeyword = trim($request->keyword);
         $lastUrl = $request->lastUrl;
-        $vocabulary =  $this->VocabularyServices->searchAjax($getKeyword, $lastUrl);
-        return response()->json([
-            'data' => $vocabulary,
-            'lastUrl' => $lastUrl,
-        ]);
+       
+        // $vocabulary = $this->VocabularyServices->searchAjax($getKeyword, $lastUrl);
+        if ($request->ajax()) {
+            Log::info('Request AJAX vào index controller');
+            $getKeyword = $request->keyword;
+            $vocabulary = $this->VocabularyServices->searchAjax($getKeyword, $lastUrl);
+            $view = view('loadmore',compact('vocabulary'))->render();
+            return response()->json(
+                [
+                'html' => $view,
+                'keyword' => $getKeyword,
+                'vocabulary' => $vocabulary,
+                'lastUrl' => $lastUrl
+                ]
+            );
+        }
+        // return response()->json([
+        //     'data' => $vocabulary,
+        //     'lastUrl' => $lastUrl,
+        //     'keyword' => $getKeyword,
+        //     // 'total' => $vocabulary->total(),
+        // ]);
     }
   
     public function edit_vocabulary(Request $request)
@@ -218,7 +252,6 @@ class VocabularyController extends Controller
         //     'type_id' => $request->input('type'),
         // ];
 
-        dd($request->all());
         $type = $request->input('type');
         if($type == 6){
             $data = [

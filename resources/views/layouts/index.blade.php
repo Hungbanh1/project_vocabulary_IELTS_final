@@ -30,6 +30,7 @@
         $fullUrl = request()->fullUrl();
         $defaultUrl = url('/');
         $lastUrl = Str::afterLast($fullUrl, '/');
+        // $lastUrl = Str::afterLast($defaultUrl, '/');
         $is_parapharse = $lastUrl;
         $type_of_voca = request()->segment(1); // adj , adv ,...
     @endphp
@@ -74,8 +75,7 @@
                                 href="{{ route('Phrase') }}">Cụm từ</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ $type_of_voca == 'edit' ? 'active' : '' }}"
-                                href="{{ route('edit') }}">Edit
+                            <a class="nav-link {{ $type_of_voca == 'edit' ? 'active' : '' }}" href="#">Edit
                             </a>
                         </li>
                     </ul>
@@ -130,7 +130,7 @@
                                     <div class="group-input mx-3 col-lg-3 col-12">
                                         {{-- @if ($fullUrl === $defaultUrl) --}}
                                         <select id="type_vocabulary" name="type_vocabulary"
-                                            class="form-control type_vocabulary @error('type_vocabulary') is-invalid @enderror">
+                                            class="form-control type_vocabulary width_unset @error('type_vocabulary') is-invalid @enderror">
                                             <option value="">Chọn loại từ</option>
                                             @foreach ($type as $item)
                                                 @if ($item->name == 'N')

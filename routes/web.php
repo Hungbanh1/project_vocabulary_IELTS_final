@@ -40,3 +40,6 @@ Route::get('/edit', "VocabularyController@edit")->name('edit');
 Route::post('/edit_vocabulary', "VocabularyController@edit_vocabulary")->name('edit_vocabulary');
 Route::post('/edit_list_parapharse', "VocabularyController@edit_list_parapharse")->name('edit_list_parapharse');
 Route::get('/loadmore', "VocabularyController@loadmore")->name('loadmore');
+
+
+Route::get('/importToVoca', "VocabularyController@importToVoca")->name('importToVoca');

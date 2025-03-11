@@ -22,8 +22,6 @@ class VocabularyRepositories
         $perPage = 100; 
         $totalRecords = Vocabulary::count(); // Lấy tổng số bản ghi
         $vocabularies = Vocabulary::orderBy('english', 'asc')->paginate($perPage);
-        // $data = [$vocabularies,$totalRecords];
-        // return $data;
         return $vocabularies;
         // return Vocabulary::orderBy('english', 'asc')->paginate(200);
 
@@ -32,7 +30,7 @@ class VocabularyRepositories
     {
     
                     $perPage = 60; 
-      
+                    
                     $vocabularies = Vocabulary::with('parapharse')
                     ->where('is_parapharse', '!=', 0)
                     ->orderBy('english', 'asc')
@@ -46,30 +44,64 @@ class VocabularyRepositories
 
     // public function searchAjax($getKeyword,$lastUrl = null)
     public function searchAjax($getKeyword,$lastUrl)
-    {
-        $query = Vocabulary::where('english', 'LIKE', "$getKeyword%");
+    {   
+
+      // Nếu là "parapharse", luôn lọc theo `is_parapharse = 1`
+    if ($lastUrl == "parapharse") {
+        $query = Vocabulary::orderBy('english', 'asc')->where('is_parapharse', 1);
         
-        // Mapping các URL với type_id
-        $typeMap = [
-            'adv' => 1,
-            'adj' => 2,
-            'V' => 3,
-            'N' => 4,
-            'Phrase' => 5,
-            'parapharse' => 6,
-        ];
-    
-        // Kiểm tra nếu $lastUrl có trong typeMap thì thêm điều kiện where
-        if (array_key_exists($lastUrl, $typeMap)) {
-            $query->where('type_id', $typeMap[$lastUrl]);
+        // Nếu có từ khóa, tiếp tục lọc theo từ khóa
+        if (!empty($getKeyword)) {
+            $query->where('english', 'LIKE', "$getKeyword%");
         }
+    } else {
+        $query = Vocabulary::orderBy('english', 'asc');
+
+        if (!empty($getKeyword)) {
+            $query = Vocabulary::where('english', 'LIKE', "$getKeyword%");
+
+            $typeMap = [
+                'adv' => 1,
+                'adj' => 2,
+                'V' => 3,
+                'N' => 4,
+                'Phrase' => 5,
+            ];
+
+            if (array_key_exists($lastUrl, $typeMap)) {
+                $query->where('type_id', $typeMap[$lastUrl]);
+            }
+        }
+    }
+
+    // Trả về danh sách với phân trang
+    $vocabulary = $query->paginate(100);
     
-        // $vocabulary = $query->get();
-        $vocabulary = $query->paginate(100)->appends(['keyword' => $getKeyword]);
-        return $vocabulary;
-        // return $data = [
-        //     'vocabulary' => $vocabulary,
-        // ];
+    return $vocabulary;
+      
+        
+    }
+    private function getColor($type_id) {
+        $colors = [
+            '1' => '#fd7e14', // adv - màu cam
+            '2' => '#dc3545', // adj - màu đỏ
+            '3' => '#007bff', // v - màu xanh dương
+            '4' => '#28a745', // n - màu xanh lá
+            '5' => '#6c757d'  // cụm từ - màu xám
+        ];
+        return $colors[$type_id] ?? '#6c757d';
+    }
+    
+    private function getTypeName($type_id) {
+        $types = [
+            '1' => 'Adv',
+            '2' => 'Adj',
+            '3' => 'V',
+            '4' => 'N',
+            '5' => 'Phrase',
+            '6' => 'Parapharse'
+        ];
+        return $types[$type_id] ?? 'Phrase';
     }
     public function search($getKeyword)
     {

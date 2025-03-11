@@ -11,6 +11,7 @@
         <ul class="list-unstyled">
             <li class="d-flex align-items-center mb-2">
                 <p class="mr-2">{{ ($vocabulary->currentPage() - 1) * $vocabulary->perPage() + $loop->iteration }}/</p>
+                {{-- <p class="mr-2">{{ $t }}/</p> --}}
                 @if ($item->type->name == 'N')
                     <p class="vocabulary-vn mr-2" style="color: #28a745;"> {{ $item->english }}</p>
                     <p style="color: #28a745;">({{ $item->type->name }})</p>

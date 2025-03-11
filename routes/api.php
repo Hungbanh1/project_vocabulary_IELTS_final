@@ -19,3 +19,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::get('/get-list-parapharse/{id}', 'Api\VocabularyAPIController@getParapharse');
+Route::get('/parapharse/{type_id}', function ($type_id) {
+    // Parapharse::where('type_id', $type_id)->get();
+    $vocabulary = $this->VocabularyServices->getAllParapharse();
+    return $vocabulary;
+});
