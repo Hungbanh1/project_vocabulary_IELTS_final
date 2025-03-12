@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Api\VocabularyAPIController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -17,8 +17,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-
-Route::get('/get-list-parapharse/{id}', 'Api\VocabularyAPIController@getParapharse');
+Route::get('/get-list-parapharse/{id}', [VocabularyAPIController::class, 'getParapharse']);
+// Route::get('/get-list-parapharse/{id}', 'Api\VocabularyAPIController@getParapharse');
 Route::get('/parapharse/{type_id}', function ($type_id) {
     // Parapharse::where('type_id', $type_id)->get();
     $vocabulary = $this->VocabularyServices->getAllParapharse();

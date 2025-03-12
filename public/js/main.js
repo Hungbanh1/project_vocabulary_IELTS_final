@@ -31,8 +31,8 @@ $('.btn-add-vocabulary').click(function(e) {
     const english = $("#english").val();
     const vietnam = $("#vietnam").val();
     const type_vocabulary  = $("#type_vocabulary").val();
-    console.log(defaultUrl);
-    console.log("dayladas...");
+    // console.log(defaultUrl);
+    // console.log("dayladas...");
     
     if(is_parapharse == "parapharse" || type_vocabulary == 6){
         var new_is_parapharse = 1
@@ -45,7 +45,7 @@ $('.btn-add-vocabulary').click(function(e) {
         type_vocabulary : type_vocabulary ,
         is_parapharse: Number(new_is_parapharse),
     }
-    console.log("Dữ liệu gửi:", data); // Kiểm tra dữ liệu trước khi gửi
+    // console.log("Dữ liệu gửi:", data); // Kiểm tra dữ liệu trước khi gửi
     $.ajax({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -75,11 +75,11 @@ $('.btn-add-vocabulary').click(function(e) {
                 $(".content").removeClass("loading");
                 if (xhr.status === 422) {
                     let errors = xhr.responseJSON.errors;
-                    console.log(errors);
+                    // console.log(errors);
                     
                     // Duyệt qua từng lỗi và hiển thị dưới input
                     Object.keys(errors).forEach(function(key) {
-                        console.log(key);
+                        // console.log(key);
                         
                         $("#" + key).addClass(
                             "is-invalid"); // Thêm class đỏ vào input
@@ -106,7 +106,7 @@ $('.btn-add-parapharse').click(function(e) {
     // const year = $("#select_year").val();
     const english = $("#english").val();
     const vietnam = $("#vietnam").val();
-    console.log(route_add_parapharse);
+    // console.log(route_add_parapharse);
     
     data = {
         english: english,
@@ -120,7 +120,7 @@ $('.btn-add-parapharse').click(function(e) {
         type: "POST",
         data: data,
         success: function(response) {
-            console.log(response);
+            // console.log(response);
             
             $('.content').html(response);
             setTimeout(function() {
@@ -143,11 +143,11 @@ $('.btn-add-parapharse').click(function(e) {
                 $(".content").removeClass("loading");
                 if (xhr.status === 422) {
                     let errors = xhr.responseJSON.errors;
-                    console.log(errors);
+                    // console.log(errors);
                     
                     // Duyệt qua từng lỗi và hiển thị dưới input
                     Object.keys(errors).forEach(function(key) {
-                        console.log(key);
+                        // console.log(key);
                         
                         $("#" + key).addClass(
                             "is-invalid"); // Thêm class đỏ vào input
@@ -175,7 +175,7 @@ $('.btn-search').click(function(e) {
     $(".invalid-feedback").text(""); // Xóa thông báo lỗi cũ
     const keyword = $("#keyword").val();
     const url = route_search + "?keyword=" + encodeURIComponent(keyword);
-    console.log(url);
+    // console.log(url);
 
     data = {
         keyword: keyword,
@@ -262,7 +262,7 @@ $(document).on('click', '.btn-delete-vocabulary, .btn-delete-parapharse, .btn-de
                     });
                 },
                 error: function(xhr) {
-                    console.log(xhr);
+                    // console.log(xhr);
                     
                     Swal.fire("Lỗi!", "Không thể xóa từ vựng.", xhr.vocabulary);
                 }
@@ -430,14 +430,14 @@ $(document).ready(function() {
                             // console.log("data",data);
                             $('#main_content').empty();
                             // console.log(data);
-                            console.log(lastUrl);
+                            // console.log(lastUrl);
                             
                             // var count = data.data.length;
                             var count = data.vocabulary.total;
                             totalRecords = count;
                             
-                            console.log(totalRecords);
-                            console.log(lastUrl);
+                            // console.log(totalRecords);
+                            // console.log(lastUrl);
                             
                             if (count >= 0) {
                                 $('.total_vocabulary').html(`
@@ -496,7 +496,6 @@ $(window).scroll(function() {
 
 function infiniteLoadMore(page) {
     $('.content').addClass("loading");
-    console.log("32131");
     
     $.ajax({
         url: fullUrl + "?page=" + page,
@@ -505,9 +504,8 @@ function infiniteLoadMore(page) {
         },
         type: "GET",
         success: function(data) {
-            console.log(data.html);
-            
-            if (!data.html.trim()) {
+            //check data before check trim
+            if (!data.html || !data.html.trim()) {
                 $(".content").removeClass("loading");
                 isLastPage = true; 
                 return;
